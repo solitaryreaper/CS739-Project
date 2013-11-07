@@ -1,0 +1,30 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+
+		<!-- cdn hosted css -->
+		<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+	        
+		<!-- local css -->	        
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        
+		<!-- local hosted images -->        
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        
+		<!-- cdn hosted javascript files -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+	    <header class="well">
+			<h1 align="center"><strong>COLLABDRAW</strong></h1>	    
+	    </header>
+	    <div class="container-fluid">
+	        @content    
+	    </div>
+    </body>
+</html>

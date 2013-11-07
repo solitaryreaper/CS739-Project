@@ -1,4 +1,24 @@
-This is your new Play 2.0 application
-=====================================
+CollabDraw
+==========
 
-This file will be packaged with your application, when using `play dist`.
+The idea is to create a collaborative real-time drawing board. Multiple users can make change to the same board at the same time and all the changes would be propagated to all the client instantly. 
+
+The aspect of the distributed systems that we intend to explore with this project are :
+1) Real-time synchronization of data.
+Whenever a client makes a change on its local browser canvas, this change is propagated to a live server which broadcasts
+the latest canvas to all the clients connected to a specific session.
+
+2) Network latency in distributed systems.
+How much time does it take for real-time synchronization in a distributed system for a simple application ?
+
+3) Fault-tolerance.
+What happens if the backend-server is down ? To avoid that scenario, sync all the changes to failover servers too. When
+the primary server is down, direct all the real-time synchronization requests to the failover server.
+
+4) Disconnected operations.
+What if none of the backend servers are up and running ? The client should still be able to do operations locally which
+should be merged with the backend servers when they are up again and broadcast to all the clients.
+
+5) Conflict resolution
+If two clients have modified the same canvas in conflicting ways, how to do the conflict resolution to achieve consistent
+state ? This can be done using a technique called Operational Transformation.

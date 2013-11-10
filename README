@@ -5,14 +5,13 @@ The idea is to create a collaborative real-time drawing board. Multiple users ca
 
 The aspect of the distributed systems that we intend to explore with this project are :
 1) Real-time synchronization of data.
-Whenever a client makes a change on its local browser canvas, this change is propagated to a live server which broadcasts
-the latest canvas to all the clients connected to a specific session.
+Whenever a client makes a change on its local canvas, this change is propagated to a live server which broadcasts it to all the clients connected to a specific session.
 
 2) Network latency in distributed systems.
-How much time does it take for real-time synchronization in a distributed system for a simple application ?
+How much time does it take for real-time synchronization in a distributed system for a simple application?
 
 3) Fault-tolerance.
-What happens if the backend-server is down ? To avoid that scenario, sync all the changes to failover servers too. When
+What happens if the backend-server is down? To avoid that scenario, sync all the changes to failover servers too. When
 the primary server is down, direct all the real-time synchronization requests to the failover server.
 
 4) Disconnected operations.

@@ -1,6 +1,8 @@
 CollabDraw
 ==========
 
+Project Proposal Link: https://docs.google.com/document/d/1yLoCjye_Yg1iWLO1RrQlO_94_mYPU-6l8tQfFApqea0/edit
+
 The idea is to create a collaborative real-time drawing board. Multiple users can make change to the same board at the same time and all the changes would be propagated to all the client instantly. 
 
 The aspect of the distributed systems that we intend to explore with this project are :

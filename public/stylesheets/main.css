@@ -3,12 +3,12 @@ html, body {
 	height: 100%;
 }
 
-#sketch {
+#sketch_container {
 	border: 10px solid gray;
 	height: 100%;
 }
 
-#paint {
+#sketch_pad {
 	width: 100%;	
 	height: 75%;
 }

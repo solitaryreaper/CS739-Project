@@ -1,3 +1,10 @@
+/**
+ * TODO : 
+ * 1) Add a color and size picker canvas to differentiate between various clients.
+ * 2) Add a frame on the left with the list of active users for this session.
+ * 3) Add proper error-handling for websocket lifecycle.
+ * 4) Modify JSON object to contain color and size too.
+ */
 $(document).ready(function () {
 	var canvas = document.querySelector('#sketch_pad');
 	var ctx = canvas.getContext('2d');
@@ -39,15 +46,10 @@ $(document).ready(function () {
 	socket.onmessage = function(msg) {
 		// Consume events from server. Specifically, replays all events on client to simulate
 		// real-time synchronization between distributed clients
-		
 		var data = JSON.parse(msg.data);
 		console.log("Recieved a message from server on websocket from client " + data.user_id);
 		
-		ctx.beginPath();
-		ctx.moveTo(data.start_x, data.start_y);
-		ctx.lineTo(data.end_x, data.end_y);
-		ctx.closePath();
-		ctx.stroke();		
+		draw(data.start_x, data.start_y, data.end_x, data.end_y);
 	}
 	
 	// Send local client messages/events to the server via websocket duplex connection
@@ -84,16 +86,24 @@ $(document).ready(function () {
 	
 	var onPaint = function() {
 		// Draw the changes locally and then broadcast it too all the other clients
-		console.log("Painting on the client ..");
-		ctx.beginPath();
-		ctx.moveTo(last_mouse.x, last_mouse.y);
-		ctx.lineTo(curr_mouse.x, curr_mouse.y);
-		ctx.closePath();
-		ctx.stroke();
+		draw(last_mouse.x, last_mouse.y, curr_mouse.x, curr_mouse.y);
 		
 		// Compose a JSON event to send to server
 		console.log("Broadcasting local change to all the connected clients ..");
 		var msg = {start_x : last_mouse.x, start_y : last_mouse.y, end_x : curr_mouse.x, end_y : curr_mouse.y, id : user_id}
 		sendMsgToServer(msg);
 	};
+
+	/**
+	 * Utility function that actually draws on the canvas between specified co-ordinates.
+	 */
+	function draw(start_x, start_y, end_x, end_y)
+	{
+		console.log("Painting on the client .. => (" + start_x + "," + start_y + ") , (" + end_x + "," + end_y + ")");
+		ctx.beginPath();
+		ctx.moveTo(start_x, start_y);
+		ctx.lineTo(end_x, end_y);
+		ctx.closePath();
+		ctx.stroke();
+	}
 });

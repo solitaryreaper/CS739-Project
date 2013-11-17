@@ -11,23 +11,28 @@ import play.mvc.WebSocket;
 
 /**
  * Represents a single drawing board which has multiple connected clients, collaborating to 
- * modify/create the same object.
+ * modify/create the same object. In the case of collaborative editor, this represents a shared
+ * HTML5 canvas object.
  * 
  * @author excelsior
+ * 
+ * TODO :
+ * 1) Assign paintroom a handle (name). This would serve as the session identifier.
  *
  */
 public class PaintRoom {
+	// List of current painters using the shared canvas.
 	public Map<String, Painter> painters = new ConcurrentHashMap<String, models.Painter>();
 	
 	/**
 	 * Utility method that processes various websocket events
 	 * 
-	 * @param in
-	 * @param out
+	 * @param in	Websocket connection from client => server
+	 * @param out	Websocket connection from server => client
 	 */
 	public void websocketHandler(final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
 	{
-        // in: handle messages from the client
+        // in: handle incoming messages from the client
         in.onMessage(new F.Callback<JsonNode>() {
             @Override
             public void invoke(JsonNode json) throws Throwable {
@@ -36,7 +41,6 @@ public class PaintRoom {
             	// Check if a client has joined the session or is this an existing client
             	if(!painters.containsKey(userId)) {
             		painter = new Painter(userId, out);
-            		//painter.updateFromJson(json);
             		painters.put(userId, painter);
             		
             		Logger.info("Added a new painter " + painter.id);
@@ -44,6 +48,7 @@ public class PaintRoom {
 
             	Logger.info("New message from user " + userId + " is " + json.toString());
             	for(Painter p : painters.values()) {
+            		// Optimization : Don't broadcast the message to the originating client.
             		if(p.equals(painter)) {
             			Logger.info("Skipped for painter " + p.id + " because same as message origin " + userId);
             			continue;
@@ -51,6 +56,9 @@ public class PaintRoom {
             		Logger.info("Writing message to painter : " + p.id);
             		p.channel.write(json);
             	}
+            	
+            	// Add the new painter information and the drawn points to the database, so that
+            	// it can be sent to any new clients.
             }
         });
 
@@ -58,7 +66,7 @@ public class PaintRoom {
         in.onClose(new F.Callback0() {
             @Override
             public void invoke() throws Throwable {
-            	Logger.info("Websocket disconnected ..");
+            	Logger.info("Websocket disconnected .. ");
             }
         });		
 	}

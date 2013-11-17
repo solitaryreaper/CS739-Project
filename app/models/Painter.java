@@ -1,14 +1,13 @@
 package models;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 
-import play.libs.Json;
 import play.mvc.WebSocket;
 
 /**
  * Represents each of the distributed client connecting to the web application
- * via websockets.
+ * via websockets. In the case of collaborative editor, various clients can join via
+ * web browser or mobile client.
  * 
  * @author excelsior
  * 
@@ -56,6 +55,4 @@ public class Painter {
 			return false;
 		return true;
 	}
-
-	
 }

@@ -14,7 +14,6 @@ import play.libs.F;
 import play.mvc.WebSocket;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -111,7 +110,6 @@ public class PaintRoom {
             	websktIngestionEventWatch.start();
             	String name = json.get(Constants.PAINTER_NAME).getTextValue();
             	Painter painter = null;
-            	List<JsonNode> events = Lists.newArrayList();
             	
             	/**
             	 * Check if this is a new client joining an existing session. If yes, do the following :
@@ -121,6 +119,7 @@ public class PaintRoom {
             	 *   Replay all these brush events before recieveing any further messages.
             	 */
             	// Check if a client has joined the session or is this an existing client
+            	List<PaintBrushEvent> pastEvents = null;
             	if(!painters.containsKey(name)) {
             		int brushSize = json.get(Constants.PAINTER_BRUSH_SIZE).getIntValue();
             		String brushColor = json.get(Constants.PAINETR_BRUSH_COLOR).getTextValue();
@@ -133,10 +132,9 @@ public class PaintRoom {
             		dbService.createPainter(paintRoomId, painter.getId(), name, brushSize, brushColor);
             		Logger.info("Added a new painter " + painter.getName());
             		
-            		List<PaintBrushEvent> pastEvents = dbService.getAllBrushEventsForPaintRoom(paintRoomId);
+            		pastEvents = dbService.getAllBrushEventsForPaintRoom(paintRoomId);
             		if(!pastEvents.isEmpty()) {
                 		Logger.info("Found " + pastEvents.size() + " past events for paint room " + paintRoomId);            			
-                		events.addAll(JSONUtils.convertPOJOToJSON(pastEvents));            			
             		}
 
             	}
@@ -144,21 +142,25 @@ public class PaintRoom {
             		painter = painters.get(name);
             	}
 
-            	events.add(json);
+            	int eventsWritten = 0;
             	Logger.debug("Total painters : " + painters.size());
             	for(Painter p : painters.values()) {
             		// Optimization : Don't broadcast the message to the originating client.
             		if(p.equals(painter)) {
-            			Logger.info("Skipped for painter " + p.getName() + " because same as message origin " + name);
+            			if(pastEvents != null) {
+            				List<JsonNode> events = JSONUtils.convertPOJOToJSON(pastEvents);
+                    		for(JsonNode event : events) {
+                        		p.getChannel().write(event);
+                        		++eventsWritten;
+                    		}
+                    		
+                    		Logger.info("Wrote " + eventsWritten + " past events ..");
+            			}
             			continue;
             		}
 
             		Logger.debug("Writing message to painter : " + p.getName() + " message : " + json.toString());
-            		for(JsonNode event : events) {
-                		p.getChannel().write(event);
-            		}
-
-
+            		p.getChannel().write(json);
             	}
             	
             	// Add the new painter information and the drawn points to the database, so that

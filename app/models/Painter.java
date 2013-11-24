@@ -1,6 +1,10 @@
 package models;
 
+import java.util.Date;
+
 import org.codehaus.jackson.JsonNode;
+
+import com.google.common.base.Objects;
 
 import play.mvc.WebSocket;
 
@@ -13,46 +17,112 @@ import play.mvc.WebSocket;
  * 
  */
 public class Painter {
-	public String id;
-	public final WebSocket.Out<JsonNode> channel;
+	private Integer id;
+	private String name;
+	private int brushSize;
+	private String brushColor;
+	private Date startTime;
+	
+	private WebSocket.Out<JsonNode> channel;
 
 	// Represents the outgoing channel from server to this client
 	public Painter(WebSocket.Out<JsonNode> channel) {
 		this.channel = channel;
 	}
 
-	public Painter(String id, WebSocket.Out<JsonNode> channel) {
-		this.id = id;
+	public Painter(String name, WebSocket.Out<JsonNode> channel) {
+		this.name = name;
 		this.channel = channel;
 	}
 
+	public Painter(String name, int brushSize, String brushColor) {
+			this.name = name;
+			this.brushSize = brushSize;
+			this.brushColor = brushColor;
+	}
+	
+	public Painter(Integer id, String name, int brushSize, String brushColor) {
+		this.id = id;
+		this.name = name;
+		this.brushSize = brushSize;
+		this.brushColor = brushColor;
+	}
+	
 	@Override
 	public String toString() {
-		return "Painter [id=" + id + "]";
+		return Objects.toStringHelper(Painter.class.getSimpleName())
+				.add("Id", getId())
+				.add("Name", getName())
+				.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return Objects.hashCode(this.name);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Painter other = (Painter) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+		if(obj instanceof Painter) {
+			Painter that = (Painter)obj;
+			return Objects.equal(this.name, that.name);
+		}
+		
+		return false;
+	}
+
+	// Returns a unique numeric identifier for the user. Serves as a user id !!
+	public int getId()
+	{
+		if(id == null) {
+			id = hashCode();
+		}
+		
+		return id;
+	}
+	
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getBrushSize() {
+		return brushSize;
+	}
+
+	public void setBrushSize(int brushSize) {
+		this.brushSize = brushSize;
+	}
+
+	public String getBrushColor() {
+		return brushColor;
+	}
+
+	public void setBrushColor(String brushColor) {
+		this.brushColor = brushColor;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public WebSocket.Out<JsonNode> getChannel() {
+		return channel;
+	}
+
+	public void setChannel(WebSocket.Out<JsonNode> channel) {
+		this.channel = channel;
 	}
 }

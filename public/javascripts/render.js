@@ -22,8 +22,10 @@ $(document).ready(function () {
 	 *  of events between client and server.
 	 * 
 	 **/
+	var paint_room_name = value = $("#paint_room_name").text();
+	console.log("Paint room name : " + paint_room_name);
 	console.log("Opening a new websocket connection : " + location.host);
-	var socket = new WebSocket("ws://" + location.host + "/stream");
+	var socket = new WebSocket("ws://" + location.host + "/stream?paintRoomName=" + paint_room_name);
 	console.log("Opened a new websocket connection ..");
 	is_connected = false;
 
@@ -47,9 +49,9 @@ $(document).ready(function () {
 		// Consume events from server. Specifically, replays all events on client to simulate
 		// real-time synchronization between distributed clients
 		var data = JSON.parse(msg.data);
-		console.log("Recieved a message from server on websocket from client " + data.user_id);
+		//console.log("Recieved a message from server on websocket from client " + data.user_id);
 		
-		draw(data.start_x, data.start_y, data.end_x, data.end_y);
+		draw(data.startPointX, data.startPointY, data.endPointX, data.endPointY);
 	}
 	
 	// Send local client messages/events to the server via websocket duplex connection
@@ -86,20 +88,20 @@ $(document).ready(function () {
 	
 	var onPaint = function() {
 		// Draw the changes locally and then broadcast it too all the other clients
-		draw(last_mouse.x, last_mouse.y, curr_mouse.x, curr_mouse.y);
+		draw(last_mouse.x, last_mouse.y, curr_mouse.x, curr_mouse.y, 5, 'blue');
 		
 		// Compose a JSON event to send to server
 		console.log("Broadcasting local change to all the connected clients ..");
-		var msg = {start_x : last_mouse.x, start_y : last_mouse.y, end_x : curr_mouse.x, end_y : curr_mouse.y, id : user_id}
+		var msg = {start_x : last_mouse.x, start_y : last_mouse.y, end_x : curr_mouse.x, end_y : curr_mouse.y, name : user_id, brush_size : 5, brush_color : 'blue'}
 		sendMsgToServer(msg);
 	};
 
 	/**
 	 * Utility function that actually draws on the canvas between specified co-ordinates.
 	 */
-	function draw(start_x, start_y, end_x, end_y)
+	function draw(start_x, start_y, end_x, end_y, brush_size, brush_color)
 	{
-		console.log("Painting on the client .. => (" + start_x + "," + start_y + ") , (" + end_x + "," + end_y + ")");
+		console.log("Painting on the client .. => (" + start_x + "," + start_y + ") , (" + end_x + "," + end_y + ")" + ", size : " + brush_size + ", color : " + brush_color);
 		ctx.beginPath();
 		ctx.moveTo(start_x, start_y);
 		ctx.lineTo(end_x, end_y);

@@ -1,16 +1,10 @@
-<!-- 
-	TODO : 
-	1) Add secondary canvas for color and size too.
-	2) Add a dashboard at the bottom to show the status of message recieve from other clients,
-	   currently connected webserver etc. to give a sneak peek into the distributed aspect of
-	   the application.
-	3) Instead of sending every single point, send a bunch of points together every 200ms. Human
-	   eye can't distinguish such small lag but it leads to much lesser traffic between client
-	   and server.
- -->
-@main(title = "Collaborative Drawing Editor") {
+@(paintRoomName : String)
+ 
+@main(title = "Welcome to Paint Room ..") {
 
-	<!-- The 2-D canvas region -->
+	<legend>Paint Room Name : @paintRoomName </legend> 
+	<label id="paint_room_name" name="paint_room_name">@paintRoomName</label>
+	
 	<div id="sketch_container">
 		<canvas id="sketch_pad"></canvas>
 	</div>

@@ -51,7 +51,7 @@ $(document).ready(function () {
 		var data = JSON.parse(msg.data);
 		//console.log("Recieved a message from server on websocket from client " + data.user_id);
 		
-		draw(data.startPointX, data.startPointY, data.endPointX, data.endPointY);
+		draw(data.start_x, data.start_y, data.end_x, data.end_y);
 	}
 	
 	// Send local client messages/events to the server via websocket duplex connection

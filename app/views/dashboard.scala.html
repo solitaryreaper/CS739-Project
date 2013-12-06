@@ -17,7 +17,7 @@
 				</thead>
 				<tbody>
 	                @if(activePaintRooms == null || activePaintRooms.isEmpty()) {
-	                    <tr><th colspan="2">No active paint rooms found !! </th></tr>
+	                    <tr><th colspan="2" align="center">No active paint rooms found !! </th></tr>
 	                }
 	                
 	                @if(activePaintRooms != null && !activePaintRooms.isEmpty()) {
@@ -43,10 +43,14 @@
 	
 	<script type="text/javascript">           
 	$(document).ready(function() {
+		// HACK : To capture the value of the session to join via a clickable button, this hidden
+		// element has been created. 
+		$("#session_name").hide();
+		
+		// Get the active session which user wants to join ..
 	    $(".btn-success").click(function(){
 	    	var buttonValue = $(this).attr("value");
 	    	$('#session_name').val(buttonValue);
-	    	alert("Value chosen : " + buttonValue);
 	    }); 
 	});
 	</script>	

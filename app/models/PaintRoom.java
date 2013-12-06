@@ -110,6 +110,7 @@ public class PaintRoom {
             	websktIngestionEventWatch.start();
             	String name = json.get(Constants.PAINTER_NAME).getTextValue();
             	Painter painter = null;
+            	boolean isDummyEvent = isDummyBrushEvent(json);
             	
             	/**
             	 * Check if this is a new client joining an existing session. If yes, do the following :
@@ -122,7 +123,7 @@ public class PaintRoom {
             	List<PaintBrushEvent> pastEvents = null;
             	if(!painters.containsKey(name)) {
             		int brushSize = json.get(Constants.PAINTER_BRUSH_SIZE).getIntValue();
-            		String brushColor = json.get(Constants.PAINETR_BRUSH_COLOR).getTextValue();
+            		String brushColor = json.get(Constants.PAINTER_BRUSH_COLOR).getTextValue();
             		painter = new Painter(name, brushSize, brushColor);
             		painter.setChannel(out);
             		painters.put(name, painter);
@@ -159,8 +160,10 @@ public class PaintRoom {
             			continue;
             		}
 
-            		Logger.debug("Writing message to painter : " + p.getName() + " message : " + json.toString());
-            		p.getChannel().write(json);
+            		if(!isDummyEvent) {
+                		Logger.debug("Writing message to painter : " + p.getName() + " message : " + json.toString());
+                		p.getChannel().write(json);
+            		}
             	}
             	
             	// Add the new painter information and the drawn points to the database, so that
@@ -210,5 +213,28 @@ public class PaintRoom {
             	Logger.info("Average DB insert event time for paintroom " + getName() + " is " + avgDbEvtTime + " ms .");
             }
         });		
+	}
+	
+	/**
+	 * Determines if the brush event is a dummy event.
+	 * 
+	 * Dummy events are sent to announce the presence of a new painter who has joined the session,
+	 * so that his/her canvas can be bootstrapped with prior events for this session from the
+	 * server.
+	 * 
+	 * @param event
+	 * @return
+	 */
+	private static boolean isDummyBrushEvent(JsonNode event)
+	{
+		boolean isDummyEvent = false;
+		if(event.get(Constants.EVENT_TYPE) != null) {
+			String eventType = event.get(Constants.EVENT_TYPE).getTextValue().trim();
+			isDummyEvent = eventType.equals(Constants.DUMMY_EVENT_MARKER.trim()) ? true : false;
+			Logger.debug("Found dummy event for event type " + eventType);
+		}
+
+		Logger.info("Event color : " + event.get(Constants.PAINTER_BRUSH_COLOR) + " ? Dummy " + isDummyEvent);
+		return isDummyEvent;
 	}
 }

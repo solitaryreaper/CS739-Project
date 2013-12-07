@@ -5,20 +5,12 @@ html, body {
 
 #sketch_container {
 	border: 10px solid gray;
-	height: 100%;
+	height: 40%;
+	width: 80%;
 }
 
 #sketch_pad {
-	width: 100%;	
-	height: 75%;
+	height: 40%;
+	width: 80%;		
 }
 
-#brush_image1 {
-	width : 10%;
-	height : 10%;
-}
-
-#brush_image2 {
-	width : 20%;
-	height : 15%;
-}

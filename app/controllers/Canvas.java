@@ -1,23 +1,23 @@
 package controllers;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
-import models.Constants;
 import models.PaintRoom;
 import models.dao.DBService;
 import models.dao.RelationalDBService;
 
 import org.codehaus.jackson.JsonNode;
 
-import com.google.common.collect.Maps;
-
 import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
-
 import views.html.canvas;
+
+import com.google.common.collect.Maps;
 /**
  * Main controller class that handles the canvas 2D drawing for the web application.
  * 
@@ -34,7 +34,15 @@ public class Canvas extends Controller {
         DynamicForm dynamicForm = form().bindFromRequest();
         String paintRoomName = dynamicForm.get("session_name");
 		Logger.info("Rendering the canvas " + paintRoomName + " .. ");
-		return ok(canvas.render(paintRoomName));
+		
+		String ipAddress = null;
+		try {
+			ipAddress = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ok(canvas.render(paintRoomName, ipAddress));
 	}
 	
 	/**

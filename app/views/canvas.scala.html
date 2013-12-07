@@ -1,14 +1,19 @@
-@(paintRoomName : String)
+@(paintRoomName : String, ipAddress : String)
  
 @main(title = "Welcome to Paint Room ..") {
 
-	<legend>Paint Room Name : @paintRoomName </legend> 
+	<legend><b>Paint Room Name</b> : @paintRoomName , <b>IP Address</b> : @ipAddress</legend> 
 	<label id="paint_room_name" name="paint_room_name">@paintRoomName</label>
 	
 	<div id="sketch_container">
 		<canvas id="sketch_pad"></canvas>
 	</div>
 	
-	<!-- Source : http://codetheory.in/html5-canvas-drawing-lines-with-smooth-edges/ -->
 	<script type="text/javascript" src = "@routes.Assets.at("javascripts/render.js")"></script>
+	
+	<script type="text/javascript">           
+	$(document).ready(function() {
+		$("#paint_room_name").hide();
+	});
+	</script>		
 }

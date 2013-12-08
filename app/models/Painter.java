@@ -1,12 +1,10 @@
 package models;
 
-import java.util.Date;
-
 import org.codehaus.jackson.JsonNode;
 
-import com.google.common.base.Objects;
-
 import play.mvc.WebSocket;
+
+import com.google.common.base.Objects;
 
 /**
  * Represents each of the distributed client connecting to the web application
@@ -17,14 +15,14 @@ import play.mvc.WebSocket;
  * 
  */
 public class Painter {
-	private Integer id;
 	private String name;
-	private int brushSize;
-	private String brushColor;
-	private Date startTime;
-	
 	private WebSocket.Out<JsonNode> channel;
 
+	public Painter(String name)
+	{
+		this.name = name;
+	}
+	
 	// Represents the outgoing channel from server to this client
 	public Painter(WebSocket.Out<JsonNode> channel) {
 		this.channel = channel;
@@ -35,23 +33,9 @@ public class Painter {
 		this.channel = channel;
 	}
 
-	public Painter(String name, int brushSize, String brushColor) {
-			this.name = name;
-			this.brushSize = brushSize;
-			this.brushColor = brushColor;
-	}
-	
-	public Painter(Integer id, String name, int brushSize, String brushColor) {
-		this.id = id;
-		this.name = name;
-		this.brushSize = brushSize;
-		this.brushColor = brushColor;
-	}
-	
 	@Override
 	public String toString() {
 		return Objects.toStringHelper(Painter.class.getSimpleName())
-				.add("Id", getId())
 				.add("Name", getName())
 				.toString();
 	}
@@ -71,51 +55,12 @@ public class Painter {
 		return false;
 	}
 
-	// Returns a unique numeric identifier for the user. Serves as a user id !!
-	public int getId()
-	{
-		if(id == null) {
-			id = hashCode();
-		}
-		
-		return id;
-	}
-	
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-	
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public int getBrushSize() {
-		return brushSize;
-	}
-
-	public void setBrushSize(int brushSize) {
-		this.brushSize = brushSize;
-	}
-
-	public String getBrushColor() {
-		return brushColor;
-	}
-
-	public void setBrushColor(String brushColor) {
-		this.brushColor = brushColor;
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
 	}
 
 	public WebSocket.Out<JsonNode> getChannel() {

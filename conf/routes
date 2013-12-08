@@ -2,10 +2,12 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET		/							controllers.Dashboard.index()
-POST    /canvas                     controllers.Canvas.index()
-GET     /stream                     controllers.Canvas.stream(paintRoomName:String)
+# Actual canvas drawing page
+GET     /canvas                     controllers.Canvas.showPaintRoom(paintroom:String, painter:String)
+GET     /stream                     controllers.Canvas.stream(paintroom:String)
+
+# Server meta handler page
+GET		/heartbeat					controllers.Servermeta.getHeartBeat()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

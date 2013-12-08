@@ -1,17 +1,13 @@
 package controllers;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import models.PaintRoom;
-import models.dao.DBService;
-import models.dao.RelationalDBService;
+import models.utils.AppUtils;
 
 import org.codehaus.jackson.JsonNode;
 
 import play.Logger;
-import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -25,49 +21,45 @@ import com.google.common.collect.Maps;
  *
  */
 public class Canvas extends Controller {
-	
-	private static DBService dbService = new RelationalDBService();
+	/**
+	 * List of active paint room sessions being serviced by this worker server.
+	 */
 	private static Map<String, PaintRoom> allPaintRooms = Maps.newConcurrentMap();
 	
-	public static Result index() {
-        // Get form parameters
-        DynamicForm dynamicForm = form().bindFromRequest();
-        String paintRoomName = dynamicForm.get("session_name");
-		Logger.info("Rendering the canvas " + paintRoomName + " .. ");
-		
-		String ipAddress = null;
-		try {
-			ipAddress = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ok(canvas.render(paintRoomName, ipAddress));
+	/**
+	 * Controller method that displays a canvas for a paintroom for a specific painter.
+	 * 
+	 * @param paintRoomName
+	 * @param painterName
+	 * @return
+	 */
+	public static Result showPaintRoom(String paintroom, String painter) {
+		Logger.info("Rendering the canvas " + paintroom + " for user " + painter);
+		return ok(canvas.render(paintroom, painter, AppUtils.getIPAddress()));
 	}
 	
 	/**
 	 * Controller method that enable websockets based full-duplex communication.
 	 */
-	public static WebSocket<JsonNode> stream(final String paintRoomName) {
+	public static WebSocket<JsonNode> stream(final String paintroom) {
 		  return new WebSocket<JsonNode>() {
 
 		    // Called when the Websocket Handshake is done.
 		    public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-		    	Logger.info("Received " + paintRoomName + " from client ..");
+		    	Logger.info("Received client request to connect to paintroom " + paintroom + " ..");
 		    	PaintRoom board = null;
-		    	if(!allPaintRooms.containsKey(paintRoomName)) {
-		    		Logger.debug("Created a new paint room " + paintRoomName + " .. ");
-			    	board = new PaintRoom(paintRoomName);
-			    	allPaintRooms.put(paintRoomName, board);
-					dbService.createPaintRoom(board.getId(), board.getName());			    	
+		    	if(!allPaintRooms.containsKey(paintroom)) {
+		    		Logger.debug("Created a new paint room " + paintroom + " .. ");
+			    	board = new PaintRoom(paintroom);
+			    	allPaintRooms.put(paintroom, board);
 		    	}
 		    	else {
-		    		Logger.debug("Joined to an existing paintroom " + paintRoomName + " .. ");
-		    		board = allPaintRooms.get(paintRoomName);
+		    		Logger.debug("Joined to an existing paintroom " + paintroom + " .. ");
+		    		board = allPaintRooms.get(paintroom);
 		    	}
 
 		    	try {
-			    	board.websocketHandler(board.getId(), in, out);
+			    	board.websocketHandler(board.getName(), in, out);
 			    } catch (Exception e) {
 			    	Logger.error("Websocket failed ..");
 	                e.printStackTrace();

@@ -3,51 +3,29 @@ package models.dao;
 import java.util.List;
 
 import models.PaintBrushEvent;
-import models.PaintRoom;
 import models.Painter;
 
 /**
- * A generic interface to the underlying database that stores all the session, users and
- * paint brush events.
- * 
- * Support for both relational(MySQL) and non-relational (MongoDB) database has been added
- * to compare their performances.
+ * A generic interface to the underlying database that stores all the paint brush events for
+ * various paintrooms being serviced by this worker server.
  * 
  * @author excelsior
  *
  */
 public interface DBService {
-	// Create a new paint room/session
-	public void createPaintRoom(int id, String name);
-	
-	// Create a new painter that joined a paintroom
-	public void createPainter(int paintRoomId, int painterId, String name, int brushSize, String burshColor);
-	
-	/**
-	 * Updates the list of painters for a paintroom with their activity status.
-	 * 
-	 * @param paintRoomId
-	 * @param painterId
-	 * @param isActive
-	 */
-	public void updatePaintRoomPaintersMap(int paintRoomId, int painterId, boolean isActive);
-	
 	/**
 	 * Persist new brush events for a user in a particular session. This is important because when
 	 * a new client/painter joins this session, all the existing brush events that have already
 	 * occured in this session should be replayed to the client. To enable this functionality all
 	 * the brush events are recorded in the database.
-	 * @param paintRoomId
+	 * @param paintRoom
 	 * @param painter
 	 * @param startX
 	 * @param startY
 	 * @param endX
 	 * @param endY
 	 */
-	public void insertPaintBrushEvents(int paintRoomId, Painter painter, int startX, int startY, int endX, int endY);
-	
-	// Returns all the active paint room sessions
-	public List<PaintRoom> getActivePaintRooms();
+	public void insertPaintBrushEvents(String paintRoom, String painter, int startX, int startY, int endX, int endY);
 	
 	/**
 	 * Returns all the paint brush events that have already occurred for a session. This is important
@@ -55,5 +33,5 @@ public interface DBService {
 	 * The key idea is that all these brush events should be chronologically sorted.
 	 * @return
 	 */
-	public List<PaintBrushEvent> getAllBrushEventsForPaintRoom(int paintRoomId);
+	public List<PaintBrushEvent> getAllBrushEventsForPaintRoom(String paintRoom);
 }

@@ -26,12 +26,20 @@ public class Constants {
 	public static final String DB_PWD = "collab_user";
 	
 	// Database table name
-	public static final String PAINTROOMS_TABLE = "collabdraw.paint_rooms";
-	public static final String PAINTERS_TABLE = "collabdraw.painters";
-	public static final String PAINTBRUSH_EVENTS_TABLE = "collabdraw.paint_events";
-	public static final String PAINTROOM_TO_PAINTERS_MAP_TABLE = "collabdraw.paint_room_painters_map";
+	public static final String PAINTBRUSH_EVENTS_TABLE = "collabdraw.paint_room_events";
 	
 	// Profiling events
 	public static final String WEBSOCKET_EVENT_TIMER = "WEBSKT_EVENT_INGESTION_TIME";
 	public static final String DB_EVENT_TIMER = "DB_INSERT_TIME";
+	
+	// Server meta identifiers
+	public static final String LATEST_HEARTBEAT = "heartbeat";
+	public static final String SERVER_ID = "server_id";
+	public static final String REGISTER_SERVER = "register";
+	public static final String SEND_HEARTBEAT = "heartbeat";
+
+	// Session manager constants
+	public static final String SESSION_MGR_URL = "http://sessionmgr.com:9000/serverOps?operation=";
+	public static final int SESSION_MGR_PORT = 8080;
+	public static final int PING_INTERVAL = 2000;
 }

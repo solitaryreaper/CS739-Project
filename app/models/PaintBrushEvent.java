@@ -11,7 +11,7 @@ import com.google.common.base.Objects;
 public class PaintBrushEvent{
 	private Integer eventId = null; // db strictly increasing identifier for this event
 
-	private int paintRoomId;
+	private String paintRoom;
 	private Painter painter;
 
 	private int startPointX;
@@ -19,10 +19,10 @@ public class PaintBrushEvent{
 	private int endPointX;
 	private int endPointY;
 
-	public PaintBrushEvent(int paintRoomId, Painter painter, int startPointX,
+	public PaintBrushEvent(String paintRoom, Painter painter, int startPointX,
 			int startPointY, int endPointX, int endPointY, int eventId) {
 		super();
-		this.paintRoomId = paintRoomId;
+		this.paintRoom = paintRoom;
 		this.painter = painter;
 		this.startPointX = startPointX;
 		this.startPointY = startPointY;
@@ -34,7 +34,7 @@ public class PaintBrushEvent{
 	@Override
 	public int hashCode()
 	{
-		return Objects.hashCode(this.paintRoomId, this.painter, this.eventId);
+		return Objects.hashCode(this.paintRoom, this.painter, this.eventId);
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class PaintBrushEvent{
 	{
 		if(obj instanceof PaintBrushEvent) {
 			PaintBrushEvent that = (PaintBrushEvent)obj;
-			return Objects.equal(this.paintRoomId, that.paintRoomId) &&
+			return Objects.equal(this.paintRoom, that.paintRoom) &&
 					Objects.equal(this.painter, that.painter) &&
 					Objects.equal(this.eventId, that.eventId);
 		}
@@ -58,12 +58,12 @@ public class PaintBrushEvent{
 		this.eventId = eventId;
 	}
 
-	public int getPaintRoomId() {
-		return paintRoomId;
+	public String getPaintRoomId() {
+		return paintRoom;
 	}
 
-	public void setPaintRoomId(int paintRoomId) {
-		this.paintRoomId = paintRoomId;
+	public void setPaintRoomId(String paintRoom) {
+		this.paintRoom = paintRoom;
 	}
 
 	public Painter getPainter() {

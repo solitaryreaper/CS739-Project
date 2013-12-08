@@ -33,8 +33,7 @@ public class JSONUtils {
 		for(PaintBrushEvent event : brushEvents) {
 			Painter p = event.getPainter();
 			DrawEvent clientFormatEvent = utils.new DrawEvent(p.getName(), event.getStartPointX(), 
-					event.getStartPointY(), event.getEndPointX(), event.getEndPointY(), 
-					p.getBrushSize(), p.getBrushColor());
+					event.getStartPointY(), event.getEndPointX(), event.getEndPointY());
 			try {
 				String json = mapper.writeValueAsString(clientFormatEvent);
 				JsonNode jsonNode = mapper.readTree(json);
@@ -65,19 +64,13 @@ public class JSONUtils {
 		public int end_x;
 		public int end_y;
 		
-		public int brush_size;
-		public String brush_color;
-		
-		public DrawEvent(String name, int start_x, int start_y, int end_x,
-				int end_y, int brush_size, String brush_color) {
+		public DrawEvent(String name, int start_x, int start_y, int end_x, int end_y) {
 			super();
 			this.name = name;
 			this.start_x = start_x;
 			this.start_y = start_y;
 			this.end_x = end_x;
 			this.end_y = end_y;
-			this.brush_size = brush_size;
-			this.brush_color = brush_color;
 		}
 	}
 }

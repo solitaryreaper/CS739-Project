@@ -1,9 +1,10 @@
-@(paintRoomName : String, ipAddress : String)
+@(paintroom : String, painter : String, ipaddr : String)
  
 @main(title = "Welcome to Paint Room ..") {
 
-	<legend><b>Paint Room Name</b> : @paintRoomName , <b>IP Address</b> : @ipAddress</legend> 
-	<label id="paint_room_name" name="paint_room_name">@paintRoomName</label>
+	<legend><b>Paint Room Name</b> : @paintroom , <b>Painter Name</b> : @painter , <b>Server IP Address</b> : @ipaddr</legend> 
+	<label id="paint_room_name" name="paint_room_name" value="@paintroom">@paintroom</label>
+	<label id="painter_name" name="painter_name" value="@painter">@painter</label>
 	
 	<div id="sketch_container">
 		<canvas id="sketch_pad"></canvas>
@@ -14,6 +15,7 @@
 	<script type="text/javascript">           
 	$(document).ready(function() {
 		$("#paint_room_name").hide();
+		$("#painter_name").hide();
 	});
 	</script>		
 }

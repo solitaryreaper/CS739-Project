@@ -30,20 +30,20 @@ $(document).ready(function () {
     
     // State variables
     var color = COLORS[0];
-    var size = SIZES[2];
+    var size = SIZES[1];
     
     /**
      *	Open a Websocket connection here that would be responsible for handle real-time communication
      *  of events between client and server.
      **/
     var paint_room_name = value = $("#paint_room_name").text();
-    var socket = new WebSocket("ws://" + location.host + "/stream?paintRoomName=" + paint_room_name);
+    var socket = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
     console.log("Opening a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
     is_connected = false;
 
-    // Create a unique identifie for this painter
-    var user_id = Math.random().toString(36).slice(2);
-    console.log("Created user id " + user_id);
+    // Send the painter name in each event to identify the client to the server.
+    var user_id = $("#painter_name").text();
+    console.log("Created painter " + user_id);
 
     /* Websocket event handlers/callbacks */
     socket.onopen = function () {
@@ -68,8 +68,6 @@ $(document).ready(function () {
         // Consume events from server. Specifically, replays all events on client to simulate
         // real-time synchronization between distributed clients
         var data = JSON.parse(msg.data);
-        //console.log("Recieved a message from server on websocket from client " + data.user_id);
-
         draw(data.start_x, data.start_y, data.end_x, data.end_y);
     }
 
@@ -111,7 +109,7 @@ $(document).ready(function () {
      */
     var onPaint = function () {
         // Draw the changes locally and then broadcast it too all the other clients
-        draw(last_mouse.x, last_mouse.y, curr_mouse.x, curr_mouse.y, 5, 'blue');
+        draw(last_mouse.x, last_mouse.y, curr_mouse.x, curr_mouse.y, size, color);
 
         // Compose a JSON event to send to server
         console.log("Broadcasting local change to all the connected clients ..");
@@ -120,9 +118,7 @@ $(document).ready(function () {
             start_y: last_mouse.y,
             end_x: curr_mouse.x,
             end_y: curr_mouse.y,
-            name: user_id,
-            brush_size: 5,
-            brush_color: color
+            name: user_id
         }
         sendMsgToServer(msg);
     };
@@ -132,7 +128,7 @@ $(document).ready(function () {
      */
     function draw(start_x, start_y, end_x, end_y, brush_size, brush_color) {
         console.log("Painting on the client .. => (" + start_x + "," + start_y + ") , " +
-            "(" + end_x + "," + end_y + ")" + ", size : " + brush_size + ", color : " + brush_color);
+            "(" + end_x + "," + end_y + ")");
         ctx.beginPath();
         ctx.moveTo(start_x, start_y);
         ctx.lineTo(end_x, end_y);

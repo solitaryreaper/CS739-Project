@@ -28,14 +28,14 @@ import com.google.common.collect.Maps;
  *
  */
 public class PaintRoom {
-	private Integer id = null;
-	
 	// Name of the current paint room (session)
 	private String name;
 	
 	// List of current painters using the shared canvas.
 	private Map<String, Painter> painters = Maps.newConcurrentMap();
-	private Map<WebSocket.In<JsonNode>, Integer> serverToClientChannels = Maps.newConcurrentMap();
+	
+	// Map of incoming client to server channels to the corresponding client painter name
+	private Map<WebSocket.In<JsonNode>, String> serverToClientChannels = Maps.newConcurrentMap();
 	
 	private static DBService dbService = new RelationalDBService();
 
@@ -53,27 +53,6 @@ public class PaintRoom {
 	public PaintRoom(String name)
 	{
 		this.name = name;
-	}
-	
-	public PaintRoom(int id, String name)
-	{
-		this.id = id;
-		this.name = name;
-	}
-	
-	// Return a unique handle for this paintroom. Serves as the session id !!
-	public int getId()
-	{
-		if(id == null) {
-			id = hashCode();
-		}
-		
-		return id;
-	}
-	
-	public void setId(int id)
-	{
-		this.id = id;
 	}
 	
 	public String getName() {
@@ -98,7 +77,7 @@ public class PaintRoom {
 	 * @param in	Websocket connection from client => server
 	 * @param out	Websocket connection from server => client
 	 */
-	public void websocketHandler(final int paintRoomId, final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
+	public void websocketHandler(final String paintRoom, final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
 	{
         // in: handle incoming messages from the client
         in.onMessage(new F.Callback<JsonNode>() {
@@ -108,6 +87,7 @@ public class PaintRoom {
             	dbIngestionEventWatch.reset();
             	
             	websktIngestionEventWatch.start();
+
             	String name = json.get(Constants.PAINTER_NAME).getTextValue();
             	Painter painter = null;
             	boolean isDummyEvent = isDummyBrushEvent(json);
@@ -122,20 +102,17 @@ public class PaintRoom {
             	// Check if a client has joined the session or is this an existing client
             	List<PaintBrushEvent> pastEvents = null;
             	if(!painters.containsKey(name)) {
-            		int brushSize = json.get(Constants.PAINTER_BRUSH_SIZE).getIntValue();
-            		String brushColor = json.get(Constants.PAINTER_BRUSH_COLOR).getTextValue();
-            		painter = new Painter(name, brushSize, brushColor);
+            		painter = new Painter(name);
+            		// Store the outgoing server to client channel for pushing events later
             		painter.setChannel(out);
             		painters.put(name, painter);
 
-            		serverToClientChannels.put(in, painter.getId());
-            		
-            		dbService.createPainter(paintRoomId, painter.getId(), name, brushSize, brushColor);
+            		serverToClientChannels.put(in, painter.getName());
             		Logger.info("Added a new painter " + painter.getName());
             		
-            		pastEvents = dbService.getAllBrushEventsForPaintRoom(paintRoomId);
+            		pastEvents = dbService.getAllBrushEventsForPaintRoom(paintRoom);
             		if(!pastEvents.isEmpty()) {
-                		Logger.info("Found " + pastEvents.size() + " past events for paint room " + paintRoomId);            			
+                		Logger.info("Found " + pastEvents.size() + " past events for paint room " + paintRoom);            			
             		}
 
             	}
@@ -144,7 +121,7 @@ public class PaintRoom {
             	}
 
             	int eventsWritten = 0;
-            	Logger.debug("Total painters : " + painters.size());
+            	Logger.debug("Total active painters for paintroom " + paintRoom + " are " + painters.size());
             	for(Painter p : painters.values()) {
             		// Optimization : Don't broadcast the message to the originating client.
             		if(p.equals(painter)) {
@@ -155,13 +132,14 @@ public class PaintRoom {
                         		++eventsWritten;
                     		}
                     		
-                    		Logger.info("Wrote " + eventsWritten + " past events ..");
+                    		Logger.info("Wrote " + eventsWritten + " past events to client " + 
+                    				p.getName() + " for paintroom " + paintRoom);
             			}
             			continue;
             		}
 
             		if(!isDummyEvent) {
-                		Logger.debug("Writing message to painter : " + p.getName() + " message : " + json.toString());
+                		Logger.debug("Writing message to painter : " + p.getName() + ", message : " + json.toString());
                 		p.getChannel().write(json);
             		}
             	}
@@ -177,7 +155,7 @@ public class PaintRoom {
             	// the other streaming paint brush events.
             	//Logger.debug("Adding paint brush events ..");
             	dbIngestionEventWatch.start();
-            	dbService.insertPaintBrushEvents(paintRoomId, painter, startX, startY, endX, endY);
+            	dbService.insertPaintBrushEvents(paintRoom, painter.getName(), startX, startY, endX, endY);
             	dbIngestionEventWatch.stop();
             	
             	websktIngestionEventWatch.stop();
@@ -201,9 +179,11 @@ public class PaintRoom {
             public void invoke() throws Throwable {
             	Logger.info("Websocket disconnected .. ");
             	
-            	// Deactivate the painter's connection status in database for this paintroom
-            	int painterId = serverToClientChannels.get(in);
-            	dbService.updatePaintRoomPaintersMap(getId(), painterId, false);
+            	/**
+            	 * Inform session manager that a painter has disconnected from a paintroom.
+            	 * TODO
+            	 */
+            	String painter = serverToClientChannels.get(in);
             	
             	// Publish the stats for the websocket to profile the application
             	double avgWebSktEvtTime = runTimeStats.get(Constants.WEBSOCKET_EVENT_TIMER)/(double)totalWebSktEvents;
@@ -234,7 +214,6 @@ public class PaintRoom {
 			Logger.debug("Found dummy event for event type " + eventType);
 		}
 
-		Logger.info("Event color : " + event.get(Constants.PAINTER_BRUSH_COLOR) + " ? Dummy " + isDummyEvent);
 		return isDummyEvent;
 	}
 }

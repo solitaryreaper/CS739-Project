@@ -6,17 +6,16 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
-
-
-/*
- * NOTE: This class is not used at the moment
- * I intend to move db functionalities to this class later
- */
 public class DatabaseHandler {
-	public String getJsonString(){
-		return null;
-	}
+	private static DB db;
 	
+	public static DB getDatabaseHandle() throws UnknownHostException{
+		if (db == null){
+			MongoClient mongo = new MongoClient();
+			db = mongo.getDB("CollabDraw");
+		}
+		return db;
+	}
 	void setupConnection(){
 		try {
 			 MongoClient mongo = new MongoClient();

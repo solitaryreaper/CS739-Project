@@ -47,7 +47,7 @@ public class StatsHandler {
 	public void getServerList() throws UnknownHostException{
 		MongoClient mongo = new MongoClient();
 		DB db = mongo.getDB("CollabDraw");
-		DBCollection table = db.getCollection("servers");
+		DBCollection table = db.getCollection("Servers");
 		BasicDBObject fields = new BasicDBObject();
 		fields.append("_id",false);
 		DBCursor cursor = table.find(null,fields);
@@ -94,7 +94,7 @@ public class StatsHandler {
 	public void pushServerStats() throws UnknownHostException{
 		MongoClient mongo = new MongoClient();
 		DB db = mongo.getDB("CollabDraw");
-		DBCollection table = db.getCollection("servers");
+		DBCollection table = db.getCollection("Servers");
 		for (Server server: servers){
 			BasicDBObject update = new BasicDBObject();
 			update.append("$set", new BasicDBObject()

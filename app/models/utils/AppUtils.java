@@ -35,9 +35,14 @@ public class AppUtils {
 		// If no servers to update.
 		if(destServers == null || destServers.isEmpty()) return false;
 		
+		String hostIPAddress = getIPAddress();		
+
 		// Send this data to all the servers in the list
 		for(String ipAddress : destServers)
 		{
+			if(ipAddress.equals(hosIPAddress)
+				continue;
+
 			Logger.info("Sending the data to [" + ipAddress + "] worker server.");
 			try 
 			{

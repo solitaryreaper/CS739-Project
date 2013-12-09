@@ -2,6 +2,8 @@ package controllers;
 
 import java.util.List;
 
+import models.AppUtils;
+
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.dashboard;
@@ -21,7 +23,7 @@ public class Dashboard extends Controller {
 	 */
 	public static Result index()
 	{
-		List<String> activePaintRooms = null;
+		List<String> activePaintRooms = AppUtils.getActivePaintrooms();
 		return ok(dashboard.render(activePaintRooms));
 	}
 }

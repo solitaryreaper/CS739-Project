@@ -21,7 +21,8 @@ public class ServerMetaHandler {
 	public static final String SESSION_MGR_URL = "http://localhost:8080/CollabDraw/serverOps?";
 	
 	/**
-	 * Registers the worker server
+	 * Registers the worker server with the session manager.
+	 * 
 	 * @return
 	 */
 	public static boolean registerServer()

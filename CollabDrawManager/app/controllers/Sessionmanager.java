@@ -45,10 +45,7 @@ public class Sessionmanager extends Controller {
 
 		String workerServerCanvasURL = AppUtils.getWokerServerCanvasURL(sessionName, painterName);
 		Logger.info("Painter : " + painterName + ", Paintroom : " + sessionName + " , URL : " + workerServerCanvasURL);
-		
-		//return ok("Painter : " + painterName + ", Paintroom : " + sessionName + " , URL : " + workerServerCanvasURL);
-		String url = "http://localhost:9000/canvas?paintroom=" + sessionName + "&painter=" + painterName;
-		Logger.info("Calling URL : " + url);
-		return redirect(url);
+
+		return redirect(workerServerCanvasURL);
 	}
 }

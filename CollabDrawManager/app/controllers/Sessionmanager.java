@@ -46,6 +46,13 @@ public class Sessionmanager extends Controller {
 		String workerServerCanvasURL = AppUtils.getWokerServerCanvasURL(sessionName, painterName);
 		Logger.info("Painter : " + painterName + ", Paintroom : " + sessionName + " , URL : " + workerServerCanvasURL);
 
+		// Redirect to error page, if no live preferred server found !!
+		if(workerServerCanvasURL.contains("DISCONNECTED")) {
+			return badRequest("Failed to get preferred server for paintroom " + sessionName + 
+					", painter " + painterName + ". URL generated : " + workerServerCanvasURL);
+		}
+		
+		// Else redirect to the canvas app on the chosen worker server URL.
 		return redirect(workerServerCanvasURL);
 	}
 }

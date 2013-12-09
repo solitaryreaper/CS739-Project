@@ -40,7 +40,7 @@ public class AppUtils {
 		// Send this data to all the servers in the list
 		for(String ipAddress : destServers)
 		{
-			if(ipAddress.equals(hosIPAddress))
+			if(ipAddress.equals(hostIPAddress))
 				continue;
 
 			Logger.info("Sending the data to [" + ipAddress + "] worker server.");

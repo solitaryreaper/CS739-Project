@@ -1,6 +1,8 @@
 package controllers;
 
 import models.Constants;
+import models.dao.DBService;
+import models.dao.RelationalDBService;
 
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -25,6 +27,30 @@ public class Servermeta extends Controller {
 	 */
 	public static Result getHeartBeat()
 	{
+		ObjectNode result = Json.newObject();
+		result.put(Constants.LATEST_HEARTBEAT, System.currentTimeMillis());
+		return ok(result);
+	}
+	
+	/**
+	 * Method gets called from another server to replicate its data to this server.
+	 * 
+	 * @param paintRoom		Paint Room Name
+	 * @param painter		Painter Name
+	 * @param startX		Start Point X
+	 * @param startY		Start Point Y
+	 * @param endX			End Point X
+	 * @param endY			End Point Y
+	 * @return
+	 */
+	public static Result replicateData(String paintRoom, String painter, int startX, int startY, int endX, int endY)
+	{
+		// Starting a DB Service to write the points coming in from another server to the local database.
+		DBService dbService = new RelationalDBService();
+		dbService.insertPaintBrushEvents(paintRoom, painter, startX, startY, endX, endY);
+		
+		// TODO: Not sure if returning result is necessary. If yes,
+		// Returning the latest timestamp as heartbeat.
 		ObjectNode result = Json.newObject();
 		result.put(Constants.LATEST_HEARTBEAT, System.currentTimeMillis());
 		return ok(result);

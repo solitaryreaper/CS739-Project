@@ -51,8 +51,6 @@ $(document).ready(function () {
     console.log("Opening a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
     is_connected = false;
 
-
-
     /* Websocket event handlers/callbacks */
     socket.onopen = function () {
         console.log("Connected via websocket ..");

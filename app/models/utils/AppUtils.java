@@ -2,7 +2,7 @@ package models.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.List;
 
 import play.Logger;
 import play.api.libs.concurrent.Promise;
@@ -29,7 +29,7 @@ public class AppUtils {
 	/**
 	 * Call replicate API with these parameters.
 	 */
-	public static boolean replicateDataOnServers(ArrayList<String> destServers, String paintRoom, String painterName, 
+	public static boolean replicateDataOnServers(List<String> destServers, String paintRoom, String painterName, 
 											  int beginX, int beginY, int endX, int endY)
 	{
 		// If no servers to update.

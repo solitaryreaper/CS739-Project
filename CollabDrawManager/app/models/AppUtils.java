@@ -22,7 +22,8 @@ import com.google.common.collect.Sets;
  */
 public class AppUtils {
 
-	public static final String SESSION_MANAGER_BASE_URL = "http://localhost:8080/CollabDraw/serverOps?";
+	public static final String SESSION_MGR_IP_ADDRESS = "192.168.2.16";
+	public static final String SESSION_MANAGER_BASE_URL = "http://" + SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
 	
 	/**
 	 * Returns the canvas URL on the chosen worker server for rendering the requested paintroom

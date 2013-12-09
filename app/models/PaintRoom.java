@@ -1,6 +1,5 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +16,7 @@ import play.libs.F;
 import play.mvc.WebSocket;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -26,8 +26,6 @@ import com.google.common.collect.Maps;
  * 
  * @author excelsior
  * 
- * TODO :
- * 1) Assign paintroom a handle (name). This would serve as the session identifier.
  *
  */
 public class PaintRoom {
@@ -35,10 +33,10 @@ public class PaintRoom {
 	private String name;
 	
 	// List of current painters using the shared canvas.
-	private Map<String, Painter> painters = Maps.newConcurrentMap();
+	private static Map<String, Painter> painters = Maps.newConcurrentMap();
 	
 	// Map of incoming client to server channels to the corresponding client painter name
-	private Map<WebSocket.In<JsonNode>, String> serverToClientChannels = Maps.newConcurrentMap();
+	private static Map<WebSocket.In<JsonNode>, String> serverToClientChannels = Maps.newConcurrentMap();
 	
 	private static DBService dbService = new RelationalDBService();
 
@@ -80,7 +78,8 @@ public class PaintRoom {
 	 * @param in	Websocket connection from client => server
 	 * @param out	Websocket connection from server => client
 	 */
-	public void websocketHandler(final ArrayList<String> destServers, final String paintRoom, final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
+	public void websocketHandler(final List<String> destServers, final String paintRoom, 
+			final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
 	{
         // in: handle incoming messages from the client
         in.onMessage(new F.Callback<JsonNode>() {
@@ -154,14 +153,17 @@ public class PaintRoom {
             	int endX = json.get(Constants.END_X).getIntValue();
             	int endY = json.get(Constants.END_Y).getIntValue();
             	
-            	// TODO : This should be done in a parallel thread and should be non-blocking for
-            	// the other streaming paint brush events.
-            	//Logger.debug("Adding paint brush events ..");
             	dbIngestionEventWatch.start();
             	dbService.insertPaintBrushEvents(paintRoom, painter.getName(), startX, startY, endX, endY);
             	
-            	// Call util method to pass the ip address of the servers and pass the data.
-            	AppUtils.replicateDataOnServers(destServers, paintRoom, painter.getName(), startX, startY, endX, endY);
+            	// Simulate strong consistency by pushing this event to all other servers.
+            	if(destServers != null && !destServers.isEmpty()) {
+            		Logger.info("Replicating data to " + destServers.size() + " destination servers ..");
+                	AppUtils.replicateDataOnServers(destServers, paintRoom, painter.getName(), startX, startY, endX, endY);            		
+            	}
+            	else {
+            		Logger.info("No destination servers found to replicate !!");
+            	}
             	
             	dbIngestionEventWatch.stop();
             	
@@ -206,6 +208,28 @@ public class PaintRoom {
             	Logger.info("Average DB insert event time for paintroom " + getName() + " is " + avgDbEvtTime + " ms .");
             }
         });		
+	}
+	
+	/**
+	 * Ingests brush events that occurred on other servers and replays it on all the clients
+	 * for the same paintroom.
+	 * 
+	 * @param event		Paint brush event on some external server.
+	 * @return			Success/Failure status.
+	 */
+	public static boolean ingestExternalEvents(PaintBrushEvent event, String paintRoom)
+	{
+		Logger.info("Writing external brush events for paintroom " + paintRoom + " .. ");
+		boolean isSuccess = true;
+		List<JsonNode> jsonEvents = JSONUtils.convertPOJOToJSON(Lists.newArrayList(event));
+		for(Painter p : painters.values()) {
+			Logger.info("Writing external event for painter " + p.getName() + " .. ");
+			for(JsonNode e: jsonEvents) {
+				p.getChannel().write(e);
+			}
+		}
+		
+		return isSuccess;
 	}
 	
 	/**

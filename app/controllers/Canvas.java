@@ -1,9 +1,10 @@
 package controllers;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import models.PaintRoom;
+import models.daemon.ServerMetaHandler;
 import models.utils.AppUtils;
 
 import org.codehaus.jackson.JsonNode;
@@ -61,8 +62,8 @@ public class Canvas extends Controller {
 		    	
 		    	try {
 		    		// Get list of Preferred Servers!
-		    		ArrayList<String> destServers = getPreferredServersForPaintRoom(paintroom);
-		    		
+		    		List<String> destServers = ServerMetaHandler.getPreferredServersForPaintRoom(paintroom);
+		    		Logger.info("Preferred severs : " + destServers.toString());
 			    	board.websocketHandler(destServers, board.getName(), in, out);
 			    } catch (Exception e) {
 			    	Logger.error("Websocket failed ..");
@@ -71,23 +72,4 @@ public class Canvas extends Controller {
 		    }
 		  };
 		}
-	
-	/**
-	 * Method to get list of Preferred Servers for a particular session.
-	 * 
-	 * @param paintRoom		PaintRoom Name
-	 * @return				List of Preferred Servers
-	 */
-	public static ArrayList<String> getPreferredServersForPaintRoom(String paintRoom)
-	{
-		// TODO: Get list of Preferred Servers from Session Manager!
-		
-		// Right now, hardcoding servers 
-		ArrayList<String> destServers = new ArrayList<String>();
-    	
-		destServers.add("192.168.10.129");	
-	    	destServers.add("192.168.10.131");	
-    	
-    	return destServers;
-	}
 }

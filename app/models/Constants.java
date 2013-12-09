@@ -39,7 +39,5 @@ public class Constants {
 	public static final String SEND_HEARTBEAT = "heartbeat";
 
 	// Session manager constants
-	public static final String SESSION_MGR_URL = "http://sessionmgr.com:9000/serverOps?operation=";
-	public static final int SESSION_MGR_PORT = 8080;
-	public static final int PING_INTERVAL = 2000;
+	public static final String SESSION_MGR_IP_ADDRESS = "192.168.2.16";
 }

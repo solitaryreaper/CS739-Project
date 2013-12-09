@@ -1,6 +1,9 @@
 package controllers;
 
 import models.Constants;
+import models.PaintBrushEvent;
+import models.PaintRoom;
+import models.Painter;
 import models.dao.DBService;
 import models.dao.RelationalDBService;
 
@@ -18,6 +21,7 @@ import play.Logger;
  */
 public class Servermeta extends Controller {
 
+	private static DBService dbService = new RelationalDBService();
 	/**
 	 * Returns a JSON object representing the heartbeat of this worker server.
 	 * 
@@ -47,11 +51,21 @@ public class Servermeta extends Controller {
 	public static Result replicateData(String paintRoom, String painter, int startX, int startY, int endX, int endY)
 	{
 		Logger.info("Server_Replication :: replicateData called");
-		// Starting a DB Service to write the points coming in from another server to the local database.
-		DBService dbService = new RelationalDBService();
 		dbService.insertPaintBrushEvents(paintRoom, painter, startX, startY, endX, endY);
 		
-		// TODO: Not sure if returning result is necessary. If yes,
+		// Replay this event on the all the clients hosted on this worker server.
+		Painter painterObj = new Painter(painter);
+		int eventId = (int)System.currentTimeMillis();
+		PaintBrushEvent event = new PaintBrushEvent(paintRoom, painterObj, startX, startY, endX, endY, eventId);
+		
+		boolean isSuccess = PaintRoom.ingestExternalEvents(event, paintRoom);
+		if(isSuccess) {
+			Logger.info("Successfully ingested external events on local worker server ..");
+		}
+		else {
+			Logger.info("Failed to ingest external events on local worker server ..");
+		}
+		
 		// Returning the latest timestamp as heartbeat.
 		ObjectNode result = Json.newObject();
 		result.put(Constants.LATEST_HEARTBEAT, System.currentTimeMillis());

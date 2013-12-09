@@ -18,7 +18,7 @@ import play.api.libs.ws.WS;
 public class AppUtils {
 	
 	public static final String HTTP_STR = "http://";
-	public static final String WORKER_SERVER_URL = ":9000/canvas?";
+	public static final String WORKER_SERVER_URL = ":9000/replicate?";
 	public static final String PAINTROOM = "paintroom";
 	public static final String PAINTER = "painter";
 	public static final String BEGINX = "bX";

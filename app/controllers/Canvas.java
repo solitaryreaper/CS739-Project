@@ -84,8 +84,8 @@ public class Canvas extends Controller {
 		
 		// Right now, hardcoding servers 
 		ArrayList<String> destServers = new ArrayList<String>();
-    	destServers.add("192.168.120.29");
-    	destServers.add("192.168.120.31");	
+    	//destServers.add("192.168.120.29");
+    	destServers.add("192.168.10.131");	
     	
     	return destServers;
 	}

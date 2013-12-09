@@ -47,7 +47,7 @@ $(document).ready(function () {
      *  Example websocket URL : http://127.0.0.1:9000/stream?paintroom=India
      **/
     var paint_room_name = value = $("#paint_room_name").text();
-    var socket = new WebSocket("ws://" + server_ip_address + ":9000" + "/stream?paintroom=" + paint_room_name);
+    var socket = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
     console.log("Opening a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
     is_connected = false;
 

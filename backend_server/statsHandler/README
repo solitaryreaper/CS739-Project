@@ -1,0 +1,3 @@
+This script is responsible for collecting hearbeat from worker servers.
+Run this script as a daemon as below - 
+prompt>./service.sh&

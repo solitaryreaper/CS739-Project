@@ -21,10 +21,10 @@ public class AppUtils {
 	public static final String WORKER_SERVER_URL = ":9000/replicate?";
 	public static final String PAINTROOM = "paintroom";
 	public static final String PAINTER = "painter";
-	public static final String BEGINX = "bX";
-	public static final String BEGINY = "bY";
-	public static final String ENDX = "eX";
-	public static final String ENDY = "eY";
+	public static final String BEGINX = "startX";
+	public static final String BEGINY = "startY";
+	public static final String ENDX = "endX";
+	public static final String ENDY = "endY";
 	
 	/**
 	 * Call replicate API with these parameters.

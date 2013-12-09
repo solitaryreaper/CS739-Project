@@ -9,6 +9,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.Logger;
 
 /**
  * Controller that provides various end points to the get the metadata for this worker server.
@@ -45,6 +46,7 @@ public class Servermeta extends Controller {
 	 */
 	public static Result replicateData(String paintRoom, String painter, int startX, int startY, int endX, int endY)
 	{
+		Logger.info("Server_Replication :: replicateData called");
 		// Starting a DB Service to write the points coming in from another server to the local database.
 		DBService dbService = new RelationalDBService();
 		dbService.insertPaintBrushEvents(paintRoom, painter, startX, startY, endX, endY);

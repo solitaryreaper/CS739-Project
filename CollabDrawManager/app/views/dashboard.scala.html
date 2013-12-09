@@ -56,40 +56,40 @@
 		// HACK : To capture the value of the session to join via a clickable button, this hidden
 		// element has been created. 
 		$("#active_session_name").hide();
-		
-		// Get the active session which user wants to join ..
-	    $(".checkbox").change(function(){
-	    	if(this.checked) {
-		    	var cboxValue = $(this).attr("value");
-		    	$('#active_session_name').val(cboxValue);	    		
-	    	}
-	    }); 
-		
-		// validates the form
-		function validate_form()
-		{
-			alert("inside validation function ..");
-			var painter_name = $("#painter_name").val();
-			// Must select a painter name for the current client
-			if(painter_name == "" || !painter_name) {
-				alert("Please choose a valid painter screen name !!");
-				return false;
-			}
-			
-			var active_session_name = $("#active_session_name").val();
-			var new_session_name = $("#new_session_name").val();
-			
-			// Must either create a new sessior or choose an existing session - not both !!
-			if((active_session_name && new_session_name) ||
-			   (!active_session_name && !new_session_name)
-			  ) 
-			{
-				alert("Please either choose an existing session or create a new session !!");
-				return false;
-			}
-			
-			return true;
-		}
 	});
+	
+	// Get the active session which user wants to join ..
+    $(":checkbox").change(function(){
+    	if(this.checked) {
+	    	var cboxValue = $(this).attr("value");
+	    	$('#active_session_name').val(cboxValue);
+			console.log("Set active session : " + cboxValue);
+    	}
+    }); 
+	
+	// validates the form
+	function validate_form()
+	{
+		var painter_name = $("#painter_name").val();
+		// Must select a painter name for the current client
+		if(painter_name == "" || !painter_name) {
+			alert("Please choose a valid painter screen name !!");
+			return false;
+		}
+		
+		var active_session_name = $("#active_session_name").val();
+		var new_session_name = $("#new_session_name").val();
+		
+		// Must either create a new sessior or choose an existing session - not both !!
+		if((active_session_name && new_session_name) ||
+		   (!active_session_name && !new_session_name)
+		  ) 
+		{
+			alert("Please either choose an existing session or create a new session !!");
+			return false;
+		}
+		
+		return true;
+	}	
 	</script>	
 }

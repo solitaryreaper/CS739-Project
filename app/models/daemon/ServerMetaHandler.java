@@ -21,7 +21,8 @@ public class ServerMetaHandler {
 	public static final String SESSION_MGR_URL = "http://localhost:8080/CollabDraw/serverOps?";
 	
 	/**
-	 * Registers the worker server
+	 * Registers the worker server with the session manager.
+	 * 
 	 * @return
 	 */
 	public static boolean registerServer()
@@ -35,7 +36,7 @@ public class ServerMetaHandler {
 		boolean isSuccess = true;
 		try {
 			String url = SESSION_MGR_URL + "operation=register&ip=" + ipAddress;
-			getAPIResult(url);
+			isSuccess = getAPIResult(url);
 		} catch (Exception e) {
 			isSuccess = false;
 		}
@@ -43,6 +44,27 @@ public class ServerMetaHandler {
 		return isSuccess;
 	}
 
+	/**
+	 * Unregisters a painter (client) from a paintroom session when the websocket connection is
+	 * closed.
+	 * @param paintroom
+	 * @param painter
+	 * @return
+	 */
+	public static boolean unregisterClient(String paintroom, String painter)
+	{
+		String url = SESSION_MGR_URL + "operation=unregisterUser&sessionId=" + paintroom + "&userId=" + painter;
+		boolean isSuccess = true;
+		try {
+			isSuccess = getAPIResult(url);
+		} catch (Exception e) {
+			isSuccess = false;
+		}
+		
+		return isSuccess;		
+	}
+	
+	// Utility method that invokes a REST GET request at the specified URL.
 	private static boolean getAPIResult(String url)
 	{
 		Logger.info("URL to invoke : " + url);

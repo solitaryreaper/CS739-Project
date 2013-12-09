@@ -3,6 +3,7 @@ package com.collabdraw.sessionmanager;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.json.simple.JSONArray;
 
 import com.collabdraw.databasehandler.DatabaseHandler;
@@ -197,7 +199,7 @@ public class SessionManager extends HttpServlet {
 				  }
 				  out.println(returnStatus);
 			  }
-			  else{
+			  else{ // If we are here then we have found an entry for this session and user in Users table
 			      // Check if the "primaryFromUserTable" is active
 			      boolean reachable = true;
 				  if (primaryFromUserTable.compareTo("DISCONNECTED") == 0){
@@ -205,9 +207,14 @@ public class SessionManager extends HttpServlet {
 				  }
 				  else{
 					  BasicDBObject searchQuery = new BasicDBObject("serverIP",primaryFromUserTable);
-					  String status = serversTable.findOne(searchQuery,null).get("status").toString();
+					  DBObject result = serversTable.findOne(searchQuery,null);
+					  String status = result.get("status").toString();
 					  if (status.compareTo("unreachable") == 0){
 						  reachable = false;
+						  // Since the server is unreachable, we need to reduce the load
+						  int existingLoad = Integer.parseInt(result.get("clientLoad").toString());
+						  updateValues(serversTable, "serverIP", primaryFromUserTable,"clientLoad", null, existingLoad-1);
+						  
 					  }
 				  }
 				  // If server is reachable, simply return the ip
@@ -235,6 +242,86 @@ public class SessionManager extends HttpServlet {
 			 }
 		  }
 		  }
+	  else if (query.compareToIgnoreCase("unregisterUser") == 0){
+		  String sessionId = request.getParameter("sessionId");
+		  String userId = request.getParameter("userId");
+		  if (sessionId == null || userId == null){
+			  out.println("Invalid Arguments.Missing sessionId and/or userId");
+		  }
+		  else{
+			  /*
+			   * Algorithm - 
+			   * 1) Check if sessionId:userId is present in Users table
+			   * 2) If not, do nothing
+			   * 3) If present,
+			   * 	3.a) Record Primary server corresponding to sessionId:userId  
+			   * 	3.b) Remove sessionId:userId record from Users table
+			   * 	3.c) Reduce clientLoad on primary server from step 3.a
+			   * 	3.d) Remove user from Sessions table
+			   * 	3.e) Check if Session has any more users
+			   * 		e.1) If yes, do nothing
+			   * 		e.2) If no, then remove the session record from Sessions table
+			   * 			 Also adjust the preferredServer count in Servers table
+			   */
+			
+			  //Check if sessionId:userId is present in Users table 
+			  DB db = DatabaseHandler.getDatabaseHandle();
+			  DBCollection sessionsTable = db.getCollection("Sessions");
+			  DBCollection serversTable = db.getCollection("Servers");
+			  DBCollection usersTable = db.getCollection("Users");
+			  BasicDBObject dbQuery = new BasicDBObject("SessionId:UserId",sessionId+":"+userId);
+			  DBCursor cursor = usersTable.find(dbQuery);
+			  String primaryServer = null;
+			  if (cursor.count() == 0){
+				  // Record not found, nothing to be done
+				  out.println("Record not found.");
+				  return;
+			  }
+			  DBObject record = cursor.next();
+			  primaryServer = record.get("PrimaryServer").toString();
+			  boolean disconnectedMode = false;
+			  if (primaryServer.compareTo("DISCONNECTED") == 0){
+				  disconnectedMode = true;
+			  }
+			  // Remove this entry from Users table
+			  usersTable.remove(record);
+			  // Reduce load on primary server
+			  if (!disconnectedMode){
+			  BasicDBObject searchQuery = new BasicDBObject("serverIP",primaryServer);
+			  int loadOnPrimary = Integer.parseInt(serversTable.findOne(searchQuery,null)
+					  					 .get("clientLoad").toString());
+			  updateValues(serversTable,"serverIP",primaryServer,"clientLoad",null,loadOnPrimary-1);
+			  }
+			  // Remove user info from Sessions table
+			  BasicDBObject match = new BasicDBObject("SessionId",sessionId);
+			  BasicDBObject update = new BasicDBObject("Users", userId);
+			  sessionsTable.update(match, new BasicDBObject("$pull", update));
+			  // Check if this session has any more users, if not cleanup
+			  BasicDBObject searchQuery = new BasicDBObject("SessionId",sessionId);
+			  DBObject sessionRecord = sessionsTable.findOne(searchQuery,null);
+			  BasicDBList userList = (BasicDBList)sessionRecord.get("Users");
+			  if (!userList.isEmpty()){
+				  // Session still has users, do nothing
+				  out.println("DONE");
+			  }
+			  else{
+				  // No more users in this session, cleanup!
+				  // Adjust "preferredServerFor" field in Servers table
+				  BasicDBList serverList = (BasicDBList)sessionRecord.get("PreferredServers");
+				  Set<String> keys = serverList.keySet();
+				  for (String key: keys){
+					  String serverIp = serverList.get(key).toString();
+					  searchQuery = new BasicDBObject("serverIP",serverIp);
+					  int prefServerCount = Integer.parseInt(serversTable.findOne(searchQuery,null)
+							  					 .get("preferredServerFor").toString());
+					  updateValues(serversTable,"serverIP",serverIp,"preferredServerFor",null,prefServerCount-1);
+				  }
+				  // Remove this session from sessions table
+				  sessionsTable.remove(sessionRecord);
+				  out.println("DONE");
+			  }
+		  }
+	  }
 	  else {
 		  out.println("Undefined server operation");  
 	  }

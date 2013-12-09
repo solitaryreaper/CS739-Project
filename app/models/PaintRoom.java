@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import models.daemon.ServerMetaHandler;
 import models.dao.DBService;
 import models.dao.RelationalDBService;
 import models.utils.AppUtils;
@@ -187,9 +188,15 @@ public class PaintRoom {
             	
             	/**
             	 * Inform session manager that a painter has disconnected from a paintroom.
-            	 * TODO
             	 */
             	String painter = serverToClientChannels.get(in);
+            	boolean isClientUnregistered = ServerMetaHandler.unregisterClient(paintRoom, painter);
+            	if(isClientUnregistered) {
+            		Logger.info("Client " + painter + " successfully unregistered from paintroom " + paintRoom);
+            	}
+            	else {
+            		Logger.error("Failed to unregister client " + painter + " from paintroom " + paintRoom);
+            	}
             	
             	// Publish the stats for the websocket to profile the application
             	double avgWebSktEvtTime = runTimeStats.get(Constants.WEBSOCKET_EVENT_TIMER)/(double)totalWebSktEvents;

@@ -31,19 +31,27 @@ $(document).ready(function () {
     // State variables
     var color = COLORS[0];
     var size = SIZES[1];
-    
-    /**
-     *	Open a Websocket connection here that would be responsible for handle real-time communication
-     *  of events between client and server.
-     **/
-    var paint_room_name = value = $("#paint_room_name").text();
-    var socket = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
-    console.log("Opening a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
-    is_connected = false;
 
     // Send the painter name in each event to identify the client to the server.
     var user_id = $("#painter_name").text();
     console.log("Created painter " + user_id);
+    
+    var server_ip_address = $("#ip_address").text();
+    console.log("Server IP address : " + server_ip_address);
+    console.log("Location Host : " + location.host);
+    
+    /**
+     *	Open a Websocket connection here that would be responsible for handle real-time communication
+     *  of events between client and server.
+     *  
+     *  Example websocket URL : http://127.0.0.1:9000/stream?paintroom=India
+     **/
+    var paint_room_name = value = $("#paint_room_name").text();
+    var socket = new WebSocket("ws://" + server_ip_address + ":9000" + "/stream?paintroom=" + paint_room_name);
+    console.log("Opening a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
+    is_connected = false;
+
+
 
     /* Websocket event handlers/callbacks */
     socket.onopen = function () {

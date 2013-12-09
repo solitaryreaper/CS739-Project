@@ -1,11 +1,13 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import models.daemon.ServerMetaHandler;
 import models.dao.DBService;
 import models.dao.RelationalDBService;
+import models.utils.AppUtils;
 import models.utils.JSONUtils;
 
 import org.codehaus.jackson.JsonNode;
@@ -78,7 +80,7 @@ public class PaintRoom {
 	 * @param in	Websocket connection from client => server
 	 * @param out	Websocket connection from server => client
 	 */
-	public void websocketHandler(final String paintRoom, final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
+	public void websocketHandler(final ArrayList<String> destServers, final String paintRoom, final WebSocket.In<JsonNode> in, final WebSocket.Out<JsonNode> out)
 	{
         // in: handle incoming messages from the client
         in.onMessage(new F.Callback<JsonNode>() {
@@ -157,6 +159,10 @@ public class PaintRoom {
             	//Logger.debug("Adding paint brush events ..");
             	dbIngestionEventWatch.start();
             	dbService.insertPaintBrushEvents(paintRoom, painter.getName(), startX, startY, endX, endY);
+            	
+            	// Call util method to pass the ip address of the servers and pass the data.
+            	AppUtils.replicateDataOnServers(destServers, paintRoom, painter.getName(), startX, startY, endX, endY);
+            	
             	dbIngestionEventWatch.stop();
             	
             	websktIngestionEventWatch.stop();

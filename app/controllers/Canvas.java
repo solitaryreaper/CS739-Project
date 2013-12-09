@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import models.PaintRoom;
@@ -57,9 +58,12 @@ public class Canvas extends Controller {
 		    		Logger.debug("Joined to an existing paintroom " + paintroom + " .. ");
 		    		board = allPaintRooms.get(paintroom);
 		    	}
-
+		    	
 		    	try {
-			    	board.websocketHandler(board.getName(), in, out);
+		    		// Get list of Preferred Servers!
+		    		ArrayList<String> destServers = getPreferredServersForPaintRoom(paintroom);
+		    		
+			    	board.websocketHandler(destServers, board.getName(), in, out);
 			    } catch (Exception e) {
 			    	Logger.error("Websocket failed ..");
 	                e.printStackTrace();
@@ -68,4 +72,22 @@ public class Canvas extends Controller {
 		  };
 		}
 	
+	/**
+	 * Method to get list of Preferred Servers for a particular session.
+	 * 
+	 * @param paintRoom		PaintRoom Name
+	 * @return				List of Preferred Servers
+	 */
+	public static ArrayList<String> getPreferredServersForPaintRoom(String paintRoom)
+	{
+		// TODO: Get list of Preferred Servers from Session Manager!
+		
+		// Right now, hardcoding servers 
+		ArrayList<String> destServers = new ArrayList<String>();
+    	
+		destServers.add("192.168.10.129");	
+	    	destServers.add("192.168.10.131");	
+    	
+    	return destServers;
+	}
 }

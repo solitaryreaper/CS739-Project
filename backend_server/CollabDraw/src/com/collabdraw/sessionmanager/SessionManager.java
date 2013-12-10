@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 
 import com.collabdraw.databasehandler.DatabaseHandler;
+import com.collabdraw.statshandler.StatsHandler;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -332,8 +333,28 @@ public class SessionManager extends HttpServlet {
 		  usersTable.remove(new BasicDBObject());
 		  out.println("ALL STATES CLEARED");
 	  }
-	  else {
-		  out.println("Undefined server operation");  
+	  else if (query.compareToIgnoreCase("getServerStatus") == 0){
+		  String serverIP = request.getParameter("serverIP");
+		  if (serverIP == null ){
+			  out.println("Invalid Arguments.Missing serverIP");
+		  }
+		  else{
+		  // Update Servers table
+		  StatsHandler statsHandler = new StatsHandler();
+		  statsHandler.updateStats();
+		  // Query for serverIP
+		  DB db = DatabaseHandler.getDatabaseHandle();
+		  DBCollection serversTable = db.getCollection("Servers");
+		  BasicDBObject searchQuery = new BasicDBObject("serverIP",serverIP);
+		  DBObject result = serversTable.findOne(searchQuery,null);
+		  if (result == null){
+			  out.println("INVALID REQUEST - Server ID not found");
+		  }
+		  else{
+			  String status = result.get("status").toString();
+			  out.println(status);
+		  }
+		  }
 	  }
    }
    

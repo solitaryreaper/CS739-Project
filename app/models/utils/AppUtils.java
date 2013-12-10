@@ -3,6 +3,9 @@ package models.utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 import play.Logger;
 import play.api.libs.concurrent.Promise;
@@ -16,6 +19,14 @@ import play.api.libs.ws.WS;
  *
  */
 public class AppUtils {
+
+	// Hack : Create a mapping of local and public IP addresses
+	public static Map<String, String> local2PublicIPMap = Maps.newHashMap();
+	static {
+		local2PublicIPMap.put("10.206.38.9", 		"54.204.106.44");
+		local2PublicIPMap.put("10.238.200.199", 	"54.196.108.77");
+		local2PublicIPMap.put("10.210.175.237", 	"54.226.244.84");
+	}
 	
 	public static final String HTTP_STR = "http://";
 	public static final String WORKER_SERVER_URL = ":9000/replicate?";
@@ -78,7 +89,8 @@ public class AppUtils {
 	{
 		String ipAddress = null;
 		try {
-			ipAddress = InetAddress.getLocalHost().getHostAddress();
+			String locaIPAddress = InetAddress.getLocalHost().getHostAddress();
+			ipAddress = local2PublicIPMap.get(locaIPAddress);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

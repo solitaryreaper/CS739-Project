@@ -43,7 +43,7 @@ public class Sessionmanager extends Controller {
 			throw new RuntimeException("Session name cannot be null. Please fix !!");
 		}
 
-		String workerServerCanvasURL = AppUtils.getWokerServerCanvasURL(sessionName, painterName);
+		String workerServerCanvasURL = AppUtils.getWorkerServerCanvasURL(sessionName, painterName);
 		Logger.info("Painter : " + painterName + ", Paintroom : " + sessionName + " , URL : " + workerServerCanvasURL);
 
 		// Redirect to error page, if no live preferred server found !!

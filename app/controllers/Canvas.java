@@ -10,6 +10,7 @@ import models.utils.AppUtils;
 import org.codehaus.jackson.JsonNode;
 
 import play.Logger;
+import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -33,11 +34,40 @@ public class Canvas extends Controller {
 	 * 
 	 * @param paintRoomName
 	 * @param painterName
-	 * @return
+	 * @return	An up-to-date canvas for the chosen paintroom !!
 	 */
 	public static Result showPaintRoom(String paintroom, String painter) {
 		Logger.info("Rendering the canvas " + paintroom + " for user " + painter);
 		return ok(canvas.render(paintroom, painter, AppUtils.getIPAddress()));
+	}
+	
+	/**
+	 * Controller methods that displays a canvas for a specific painter, but on a new server than
+	 * the one to which the client had initially connected.
+	 * 
+	 *  This method represents the failover situation in which a painter was connected to a paintroom
+	 *  on one of the worker servers. Due to some reason, the worker server went down and we need to
+	 *  relocate the client to a new worker server, if available. If no other worker servers are
+	 *  available the client operates in disconnected mode.
+	 */
+	public static Result showPaintRoomOnNewServer()
+	{
+		DynamicForm dynamicForm = form().bindFromRequest();
+		Logger.info(dynamicForm.data().toString());
+		String painterName = dynamicForm.get("painter_name_redirect");
+		String sessionName = dynamicForm.get("paint_room_name_redirect");
+		
+		String workerServerCanvasURL = AppUtils.getWorkerServerCanvasURL(sessionName, painterName);
+		Logger.info("Painter : " + painterName + ", Paintroom : " + sessionName + " , URL : " + workerServerCanvasURL);
+
+		// Redirect to error page, if no live preferred server found !!
+		if(workerServerCanvasURL.contains("DISCONNECTED")) {
+			return badRequest("Failed to get preferred server for paintroom " + sessionName + 
+					", painter " + painterName + ". URL generated : " + workerServerCanvasURL);
+		}
+		
+		// Else redirect to the canvas app on the chosen worker server URL.
+		return redirect(workerServerCanvasURL);		
 	}
 	
 	/**

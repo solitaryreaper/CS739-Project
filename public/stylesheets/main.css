@@ -5,12 +5,12 @@ html, body {
 
 #sketch_container {
 	border: 1px solid gray;
-	height: 60%;
+	height: 40%;
 	width: 100%;
 }
 
 #sketch_pad {
-	height: 60%;
+	height: 40%;
 	width: 100%;		
 }
 

@@ -27,6 +27,8 @@ $(document).ready(function () {
     // State variables
     var color = 'blue';
     var size = 5;
+    
+    var SESSION_MGR_API_URL = "http://54.201.156.52:8080/CollabDraw/serverOps?";
 
     // Send the painter name in each event to identify the client to the server.
     var user_id = $("#painter_name").text();
@@ -63,8 +65,112 @@ $(document).ready(function () {
     socket.onclose = function () {
         console.log("Websocket disconnected ..");
         is_connected = false;
+        
+        // Check if this is a normal client disconnect or preferred server failure
+        //var is_normal_client_disconnect = checkIfNormalClientDisconnect();
+        var is_normal_client_disconnect = false;
+        
+        /**
+         * In case, this is not a normal client disconnect then need to figure out if there are any
+         * other worker servers to which this client can be redirected. If yes, redirect to that
+         * worker server, else operate in the disconnected mode.
+         */
+        if(is_normal_client_disconnect == false) {
+        	//var is_disconnected_mode = checkIfDisconnectedMode();
+        	var is_disconnected_mode = false;
+        	// Preferred server is down. Migrate the client to a new worker server
+        	if(!is_disconnected_mode) {
+        		console.log("Preferred server down. Migrating client to a new worker server ..");
+        		handlePreferredServerDown();
+        	}
+        	// All worker servers are down. Operate in disconnected mode
+        	else {
+        		console.log("All worker servers down. Operating in disconnected mode ..");
+        		handleDisconnectedMode();
+        	}
+        }
+        else {
+        	console.log("Client has ended its session ..");
+        }
     }
 
+    /**
+     * Checks if the websocket disconnect happened because the client ended its session or
+     * because the preferred server went down.
+     */
+    function checkIfNormalClientDisconnect()
+    {
+    	console.log("Inside function ..");
+    	var is_normal_client_disconnect = false;
+    	var api_url = SESSION_MGR_API_URL + "operation=getServerStatus&serverIP=" + server_ip_address;
+    	
+    	var api_result = "";
+    	
+    	console.log("Invoking a synchronous AJAX call to check for normal client disconnect ..");
+        $.ajax({
+            type: "GET",
+            url: SESSION_MGR_API_URL,
+            data: "operation=getServerStatus&serverIP=" + "127.0.0.1",            
+    	    async:false,            
+            success: function(response) {
+            	console.log("API Result : " + response);
+            	api_result = response;
+            },
+            error: function( req, status, err ) {
+                console.log( 'something went wrong', status, err );
+            }             
+        });
+        
+        console.log("API Result for normal client disconnect mode determination is " + api_result);
+        if(api_result == "reachable") {
+        	is_normal_client_disconnect = true;
+        }
+        
+    	return is_normal_client_disconnect;
+    }
+    
+    /**
+     * Checks if all the worker servers are down and the client is operating in disconnected mode.
+     */
+    function checkIfDisconnectedMode()
+    {
+    	var is_disconnected_mode = false;
+    	var api_result = "";
+    	
+    	console.log("Invoking a synchronous AJAX call to check for disconnected mode ..");
+        $.ajax({
+            type: "GET",
+            url: SESSION_MGR_API_URL,
+            data: "operation=getWorkerServer&sessionId=" + paint_room_name + "&userId=" + user_id,
+            success: function(response) {
+            	console.log("API Result : " + response);
+            	api_result = response;
+            },
+    	    async:false
+        });
+        
+        console.log("API Result for disconnected mode determination is " + api_result);
+        if(api_result == "DISCONNECTED") {
+        	is_disconnected_mode = true;
+        }
+        
+    	return is_normal_client_disconnect;
+    }
+    
+    /**
+     * Function that is invoked when the preferred server goes down
+     */
+    function handlePreferredServerDown()
+    {
+    	// Show the hidden form that would aid user in navigating to a new server
+    	$("#failure_handler").show();
+    }
+    
+    function handleDisconnectedMode()
+    {
+    	
+    }
+    
     // Handle incoming messages/events from the server via websocket duplex connection
     socket.onmessage = function (msg) {
         // Consume events from server. Specifically, replays all events on client to simulate

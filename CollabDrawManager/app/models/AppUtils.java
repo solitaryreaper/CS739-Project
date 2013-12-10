@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 public class AppUtils {
 
 	// Prashant's running Tomcat instance that hosts session manager API.
-	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.217";
+	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.52";
 	public static final String SESSION_MANAGER_BASE_URL = "http://" + SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
 	
 	/**
@@ -34,7 +34,7 @@ public class AppUtils {
 	 * @param painter
 	 * @return
 	 */
-	public static String getWokerServerCanvasURL(String paintRoomName, String painter)
+	public static String getWorkerServerCanvasURL(String paintRoomName, String painter)
 	{
 		Logger.info("Inside worker server canvas url ..");
 		String ipAddress = getPreferredServerForClient(paintRoomName, painter);

@@ -32,9 +32,8 @@ public class Servermeta extends Controller {
 	 */
 	public static Result getHeartBeat()
 	{
-		ObjectNode result = Json.newObject();
-		result.put(Constants.LATEST_HEARTBEAT, System.currentTimeMillis());
-		return ok(result);
+		String heartbeat = new Long(System.currentTimeMillis()).toString();
+		return ok(heartbeat);
 	}
 	
 	/**

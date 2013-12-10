@@ -322,6 +322,16 @@ public class SessionManager extends HttpServlet {
 			  }
 		  }
 	  }
+	  else if (query.compareToIgnoreCase("clearState") == 0){
+		  DB db = DatabaseHandler.getDatabaseHandle();
+		  DBCollection sessionsTable = db.getCollection("Sessions");
+		  DBCollection serversTable = db.getCollection("Servers");
+		  DBCollection usersTable = db.getCollection("Users");
+		  sessionsTable.remove(new BasicDBObject());
+		  serversTable.remove(new BasicDBObject());
+		  usersTable.remove(new BasicDBObject());
+		  out.println("ALL STATES CLEARED");
+	  }
 	  else {
 		  out.println("Undefined server operation");  
 	  }

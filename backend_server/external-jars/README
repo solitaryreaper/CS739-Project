@@ -1,0 +1,6 @@
+Steps to deploy CollabDraw.war
+
+1) Upload CollabDraw.war from tomcat manager. Do not start it yet
+2) Copy the jars in this directory to <tomcat_base_dir>/webapps/CollabDraw/WEB-INF/lib
+3) restart apache (catalina.sh stop followed by start)
+4) Go to tomcat manager and start the app if not already started

@@ -4,13 +4,13 @@ html, body {
 }
 
 #sketch_container {
-	border: 10px solid gray;
-	height: 40%;
-	width: 80%;
+	border: 1px solid gray;
+	height: 60%;
+	width: 100%;
 }
 
 #sketch_pad {
-	height: 40%;
-	width: 80%;		
+	height: 60%;
+	width: 100%;		
 }
 

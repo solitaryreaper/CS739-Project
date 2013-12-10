@@ -23,14 +23,10 @@ $(document).ready(function () {
         x: 0,
         y: 0
     };
-
-    // CONSTANTS
-    var COLORS = ['red', 'blue', 'yellow', 'green', 'white'];
-    var SIZES = [2, 5, 8, 10, 14];
     
     // State variables
-    var color = COLORS[0];
-    var size = SIZES[1];
+    var color = 'blue';
+    var size = 5;
 
     // Send the painter name in each event to identify the client to the server.
     var user_id = $("#painter_name").text();
@@ -90,6 +86,7 @@ $(document).ready(function () {
         last_mouse.x = curr_mouse.x;
         last_mouse.y = curr_mouse.y;
 
+        var o = $(canvas).offset();
         curr_mouse.x = e.pageX - this.offsetLeft;
         curr_mouse.y = e.pageY - this.offsetTop;
     }, false);

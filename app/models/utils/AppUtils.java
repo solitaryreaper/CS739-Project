@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import models.Constants;
+
 import org.codehaus.jackson.JsonNode;
 
 import com.google.common.collect.Lists;
@@ -35,8 +37,7 @@ public class AppUtils {
 	}
 	
 	// Prashant's running Tomcat instance that hosts session manager API.
-	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.52";
-	public static final String SESSION_MANAGER_BASE_URL = "http://" + SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
+	public static final String SESSION_MANAGER_BASE_URL = "http://" + Constants.SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
 	
 	public static final String HTTP_STR = "http://";
 	public static final String WORKER_SERVER_URL = ":9000/replicate?";

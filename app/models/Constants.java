@@ -39,5 +39,6 @@ public class Constants {
 	public static final String SEND_HEARTBEAT = "heartbeat";
 
 	// Session manager constants
-	public static final String SESSION_MGR_IP_ADDRESS = "192.168.2.16";
+	// Prashant's running tomcat instance that hosts session manager API.
+	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.217";
 }

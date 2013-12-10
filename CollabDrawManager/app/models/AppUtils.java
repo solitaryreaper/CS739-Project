@@ -22,7 +22,8 @@ import com.google.common.collect.Sets;
  */
 public class AppUtils {
 
-	public static final String SESSION_MGR_IP_ADDRESS = "192.168.2.16";
+	// Prashant's running Tomcat instance that hosts session manager API.
+	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.217";
 	public static final String SESSION_MANAGER_BASE_URL = "http://" + SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
 	
 	/**
@@ -48,7 +49,7 @@ public class AppUtils {
 	 */
 	public static List<String> getActivePaintrooms()
 	{
-		String sessionsURL = "http://localhost:8080/CollabDraw/serverOps?operation=getSessionTable";
+		String sessionsURL = SESSION_MANAGER_BASE_URL + "operation=getSessionTable";
 		String sessions = getAPIResult(sessionsURL);
 		Logger.info("Sessions string : " + sessions);
 		

@@ -99,6 +99,9 @@ $(document).ready(function () {
     	replicate_ip_addresss = replicate_ip_address_html.innerHTML;
     	console.log(replicate_ip_address_html.innerHTML);
     }
+    else {
+    	replicate_ip_addresss = replicate_ip_addresss_html;
+    }
     console.log("Replicate IP address : " + replicate_ip_address);
     
     var replicate_sock = new WebSocket("ws://" + replicate_ip_address + ":9000" + "/synchronize?paintroom=" + paint_room_name);

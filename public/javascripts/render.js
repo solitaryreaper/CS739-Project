@@ -93,14 +93,14 @@ $(document).ready(function () {
     }
 
     /*---------- Replicate Worker Server websocket for replication ----------------*/
-    var replicate_ip_addresss_html = $("#replicate_ip_address").text();
+    var replicate_ip_address_html = $("#replicate_ip_address").text();
     var replicate_ip_address = "";
     if( Object.prototype.toString.call(replicate_ip_address) == '[object HTMLLabelElement]' ) {
-    	replicate_ip_addresss = replicate_ip_address_html.innerHTML;
+    	replicate_ip_address = replicate_ip_address_html.innerHTML;
     	console.log(replicate_ip_address_html.innerHTML);
     }
     else {
-    	replicate_ip_addresss = replicate_ip_addresss_html;
+    	replicate_ip_address = replicate_ip_address_html;
     }
     console.log("Replicate IP address : " + replicate_ip_address);
     

@@ -34,23 +34,23 @@ $(document).ready(function () {
     var user_id = $("#painter_name").text();
     console.log("Created painter " + user_id);
     
-    var server_ip_address = $("#ip_address").text();
-    console.log("Server IP address : " + server_ip_address);
+    var preferred_ip_address = $("#preferred_ip_address").text();
+    console.log("Server IP address : " + preferred_ip_address);
     console.log("Location Host : " + location.host);
-    
+
     /**
      *	Open a Websocket connection here that would be responsible for handle real-time communication
-     *  of events between client and server.
+     *  of events between client and the preferred server.
      *  
      *  Example websocket URL : http://127.0.0.1:9000/stream?paintroom=India
      **/
     var paint_room_name = value = $("#paint_room_name").text();
-    var socket = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
+    var primary_sock = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
     console.log("Opening a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
-    is_connected = false;
+    var is_connected = false;
 
     /* Websocket event handlers/callbacks */
-    socket.onopen = function () {
+    primary_sock.onopen = function () {
         console.log("Connected via websocket ..");
         is_connected = true;
         // Bootstrap the canvas with prior events from the server ..
@@ -62,7 +62,7 @@ $(document).ready(function () {
         }
     }
 
-    socket.onclose = function () {
+    primary_sock.onclose = function () {
         console.log("Websocket disconnected ..");
         is_connected = false;
         
@@ -92,6 +92,25 @@ $(document).ready(function () {
         }
     }
 
+    /*---------- Replicate Worker Server websocket for replication ----------------*/
+    var replicate_ip_addresss = $("#replicate_ip_address").text();
+    console.log("Replicate IP address : " + replicate_ip_address);
+    
+    var replicate_sock = new WebSocket("ws://" + replicate_ip_address + ":9000" + "/synchronize?paintroom=" + paint_room_name);
+    var is_replicate_connected = false;
+    console.log("Opened a replicate socket connection to " + replicate_ip_address + " ... ");
+    
+    /* Websocket event handlers/callbacks for replicate server */
+    replicate_sock.onopen = function () {
+        console.log("Connected via websocket to replicate server ..");
+        is_replicate_connected = true;
+    }
+
+    replicate_sock.onclose = function () {
+        console.log("Websocket disconnected to replicate server ..");
+        is_replicate_connected = false;
+    }
+    
     /**
      * Checks if the websocket disconnect happened because the client ended its session or
      * because the preferred server went down.
@@ -99,15 +118,13 @@ $(document).ready(function () {
     function checkIfNormalClientDisconnect()
     {
     	var is_normal_client_disconnect = false;
-    	var api_url = SESSION_MGR_API_URL + "operation=getServerStatus&serverIP=" + server_ip_address;
-    	
     	var api_result = "";
     	
     	console.log("Invoking a synchronous AJAX call to check for normal client disconnect ..");
         $.ajax({
             type: "GET",
             url: SESSION_MGR_API_URL,
-            data: "operation=getServerStatus&serverIP=" + server_ip_address,            
+            data: "operation=getServerStatus&serverIP=" + preferred_ip_address,            
     	    async:false,            
             success: function(response) {
             	console.log("API Result : " + response);
@@ -172,7 +189,7 @@ $(document).ready(function () {
     }
     
     // Handle incoming messages/events from the server via websocket duplex connection
-    socket.onmessage = function (msg) {
+    primary_sock.onmessage = function (msg) {
         // Consume events from server. Specifically, replays all events on client to simulate
         // real-time synchronization between distributed clients
         var data = JSON.parse(msg.data);
@@ -183,7 +200,8 @@ $(document).ready(function () {
     function sendMsgToServer(msg) {
         console.log("Sending a message to server on websocket ..");
         if (is_connected) {
-            socket.send(JSON.stringify(msg))
+            primary_sock.send(JSON.stringify(msg));
+            replicate_sock.send(JSON.stringify(msg));
         }
     }
 

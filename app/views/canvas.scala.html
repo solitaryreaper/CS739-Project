@@ -1,4 +1,4 @@
-@(paintroom : String, painter : String, primaryIP : String, failoverIPCanvasUrl : String)
+@(paintroom : String, painter : String, primaryIP : String, replicateIP:String, failoverIPCanvasUrl : String)
  
 @main(title = "Welcome to Paint Room ..") {
 
@@ -11,7 +11,8 @@
 	</legend> 
 	<label id="paint_room_name" name="paint_room_name" value="@paintroom">@paintroom</label>
 	<label id="painter_name" name="painter_name" value="@painter">@painter</label>
-	<label id="ip_address" name="ip_address" value="@primaryIP">@primaryIP</label>
+	<label id="preferred_ip_address" name="preferred_ip_address" value="@primaryIP">@primaryIP</label>
+	<label id="replicate_ip_address" name="replicate_ip_address" value="@replicateIP">@replicateIP</label>	
 	
 	<div id="sketch_container">
 		<canvas id="sketch_pad"></canvas>
@@ -36,7 +37,8 @@
 	$(document).ready(function() {
 		$("#paint_room_name").hide();
 		$("#painter_name").hide();
-		$("#ip_address").hide();
+		$("#preferred_ip_address").hide();
+		$("#replicate_ip_address").hide();
 		
 		$("#failure_handler").hide();
 	});

@@ -5,10 +5,10 @@
 # Actual canvas drawing page
 GET     /canvas                     controllers.Canvas.showPaintRoom(paintroom:String, painter:String)
 GET     /stream                     controllers.Canvas.stream(paintroom:String)
+GET		/synchronize				controllers.Canvas.synchronize(paintroom:String)
 
 # Server meta handler page
 GET		/heartbeat					controllers.Servermeta.getHeartBeat()
-
 GET		/replicate					controllers.Servermeta.replicateData(paintroom:String, painter:String, startX:Int, startY:Int, endX:Int, endY:Int)
 
 # Map static resources from the /public folder to the /assets URL path

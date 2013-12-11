@@ -94,6 +94,9 @@ $(document).ready(function () {
 
     /*---------- Replicate Worker Server websocket for replication ----------------*/
     var replicate_ip_addresss = $("#replicate_ip_address").text();
+    if( Object.prototype.toString.call(replicate_ip_address) == '[object HTMLLabelElement]' ) {
+    	replicate_ip_addresss = replicate_ip_address.innerHTML;
+    }
     console.log("Replicate IP address : " + replicate_ip_address);
     
     var replicate_sock = new WebSocket("ws://" + replicate_ip_address + ":9000" + "/synchronize?paintroom=" + paint_room_name);

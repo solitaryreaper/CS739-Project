@@ -1,4 +1,4 @@
-@(paintroom : String, painter : String, ipaddr : String)
+@(paintroom : String, painter : String, primaryIP : String, failoverIPCanvasUrl : String)
  
 @main(title = "Welcome to Paint Room ..") {
 
@@ -11,7 +11,7 @@
 	</legend> 
 	<label id="paint_room_name" name="paint_room_name" value="@paintroom">@paintroom</label>
 	<label id="painter_name" name="painter_name" value="@painter">@painter</label>
-	<label id="ip_address" name="ip_address" value="@ipaddr">@ipaddr</label>
+	<label id="ip_address" name="ip_address" value="@primaryIP">@primaryIP</label>
 	
 	<div id="sketch_container">
 		<canvas id="sketch_pad"></canvas>
@@ -21,11 +21,8 @@
 		 and make it as the preferred server for the paintroom.
 	 -->
 	<div id="failure_handler" align="center">
-		<form id="failure_handler_form" method="post" class="form-horizontal container" action="@routes.Canvas.showPaintRoomOnNewServer()">
-			<label id="paint_room_name_redirect" name="paint_room_name_redirect" value="@paintroom">@paintroom</label>
-			<label id="painter_name_redirect" name="painter_name_redirect" value="@painter">@painter</label>		
-			
-			<h4 class="text-danger"><font color="red">Preferred server <b>@ipaddr</b> failed .. !!</font></h4>
+		<form id="failure_handler_form" method="post" class="form-horizontal container" action="@failoverIPCanvasUrl">
+			<h4 class="text-danger"><font color="red">Preferred server <b>@primaryIP</b> failed .. !!</font></h4>
 			<div id="server_redirecting">
 				<img height="50" width="50" src="http://barracuda.botany.wisc.edu/MaizeWebApp/assets/img/loading.gif">
 			</div>			
@@ -42,8 +39,6 @@
 		$("#ip_address").hide();
 		
 		$("#failure_handler").hide();
-		$("#paint_room_name_redirect").hide();
-		$("#painter_name_redirect").hide();		
 	});
 	</script>		
 }

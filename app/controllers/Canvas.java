@@ -38,7 +38,10 @@ public class Canvas extends Controller {
 	 */
 	public static Result showPaintRoom(String paintroom, String painter) {
 		Logger.info("Rendering the canvas " + paintroom + " for user " + painter);
-		return ok(canvas.render(paintroom, painter, AppUtils.getIPAddress()));
+		String preferredServerIP = AppUtils.getIPAddress();
+		String failoverIP = AppUtils.getFailoverIPAddress(preferredServerIP);
+		String failoverServerCanvasURL = "http://" + failoverIP + ":9000/canvas?paintroom=" + paintroom + "&painter=" + painter;
+		return ok(canvas.render(paintroom, painter, preferredServerIP, failoverServerCanvasURL));
 	}
 	
 	/**

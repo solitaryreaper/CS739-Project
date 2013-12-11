@@ -112,17 +112,23 @@ public class Canvas extends Controller {
 	            	
             	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);
             	
-        		// Replay this event on the all the clients hosted on this worker server.
-        		Painter painterObj = new Painter(painter);
-        		int eventId = (int)System.currentTimeMillis();
-        		PaintBrushEvent event = new PaintBrushEvent(paintroom, painterObj, startX, startY, endX, endY, eventId);
-        		boolean isSuccess = PaintRoom.ingestExternalEvents(event, paintroom);
-        		if(isSuccess) {
-        			Logger.info("Successfully ingested external events on local worker server ..");
-        		}
-        		else {
-        			Logger.info("Failed to ingest external events on local worker server ..");
-        		}
+            	Logger.info("Paintrooms : " + allPaintRooms.keySet().toString());
+            	if(allPaintRooms.containsKey(paintroom)) {
+            		// Replay this event on the all the clients hosted on this worker server.
+            		Painter painterObj = new Painter(painter);
+            		int eventId = (int)System.currentTimeMillis();
+            		PaintBrushEvent event = new PaintBrushEvent(paintroom, painterObj, startX, startY, endX, endY, eventId);
+            		boolean isSuccess = PaintRoom.ingestExternalEvents(event, paintroom);
+            		if(isSuccess) {
+            			Logger.info("Successfully ingested external events on local worker server ..");
+            		}
+            		else {
+            			Logger.info("Failed to ingest external events on local worker server ..");
+            		}            		
+            	}
+            	else {
+            		Logger.info("Skipped replay of event on canvas because paintroom not active on server " + paintroom);
+            	}
 	         } 
 	      });
 	      

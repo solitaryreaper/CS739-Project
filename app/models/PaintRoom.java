@@ -221,12 +221,6 @@ public class PaintRoom {
 	 */
 	public static boolean ingestExternalEvents(PaintBrushEvent event, String paintRoom)
 	{
-		if(!painters.containsKey(paintRoom)) {
-			Logger.info("Skipping the canvas ingestion for replicate event as this paintroom is not" +
-					" live on this worker server ..");
-			return true;
-		}
-		
 		Logger.info("Writing external brush events for paintroom " + paintRoom + " .. ");
 		boolean isSuccess = true;
 		List<JsonNode> jsonEvents = JSONUtils.convertPOJOToJSON(Lists.newArrayList(event));

@@ -5,7 +5,6 @@
 # Actual canvas drawing page
 GET     /canvas                     controllers.Canvas.showPaintRoom(paintroom:String, painter:String)
 GET     /stream                     controllers.Canvas.stream(paintroom:String)
-POST	/redirect					controllers.Canvas.showPaintRoomOnNewServer()
 
 # Server meta handler page
 GET		/heartbeat					controllers.Servermeta.getHeartBeat()

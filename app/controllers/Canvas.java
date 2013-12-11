@@ -44,18 +44,6 @@ public class Canvas extends Controller {
 		return ok(canvas.render(paintroom, painter, preferredServerIP, failoverServerCanvasURL));
 	}
 	
-	public static Result showPaintRoomOnNewServer()
-	{
-		DynamicForm dynamicForm = form().bindFromRequest();
-		String paintroom = dynamicForm.get("painter_room_name_redirect");
-		String painter = dynamicForm.get("painter_name_redirect");
-		Logger.info("Rendering the canvas " + paintroom + " for user " + painter);
-		String preferredServerIP = AppUtils.getIPAddress();
-		//String failoverIP = AppUtils.getFailoverIPAddress(preferredServerIP);
-		//String failoverServerCanvasURL = "http://" + failoverIP + ":9000/canvas?paintroom=" + paintroom + "&painter=" + painter;
-		return ok(canvas.render(paintroom, painter, preferredServerIP, null));		
-	}
-	
 	/**
 	 * Controller method that enable websockets based full-duplex communication.
 	 */

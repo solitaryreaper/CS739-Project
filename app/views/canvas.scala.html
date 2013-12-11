@@ -21,7 +21,9 @@
 		 and make it as the preferred server for the paintroom.
 	 -->
 	<div id="failure_handler" align="center">
-		<form id="failure_handler_form" method="get" class="form-horizontal container" action="@failoverIPCanvasUrl">
+		<form id="failure_handler_form" method="post" class="form-horizontal container" action="@failoverIPCanvasUrl">
+			<label id="paint_room_name_redirect" name="paint_room_name_redirect" value="@paintroom">@paintroom</label>
+			<label id="painter_name_redirect" name="painter_name_redirect" value="@painter">@painter</label>		
 			<h4 class="text-danger"><font color="red">Preferred server <b>@primaryIP</b> failed .. !!</font></h4>
 			<div id="server_redirecting">
 				<img height="50" width="50" src="http://barracuda.botany.wisc.edu/MaizeWebApp/assets/img/loading.gif">
@@ -39,6 +41,8 @@
 		$("#ip_address").hide();
 		
 		$("#failure_handler").hide();
+		$("#paint_room_name_redirect").hide();
+		$("#painter_name_redirect").hide();
 	});
 	</script>		
 }

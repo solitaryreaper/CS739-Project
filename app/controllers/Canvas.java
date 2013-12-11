@@ -38,36 +38,10 @@ public class Canvas extends Controller {
 	 */
 	public static Result showPaintRoom(String paintroom, String painter) {
 		Logger.info("Rendering the canvas " + paintroom + " for user " + painter);
-		return ok(canvas.render(paintroom, painter, AppUtils.getIPAddress()));
-	}
-	
-	/**
-	 * Controller methods that displays a canvas for a specific painter, but on a new server than
-	 * the one to which the client had initially connected.
-	 * 
-	 *  This method represents the failover situation in which a painter was connected to a paintroom
-	 *  on one of the worker servers. Due to some reason, the worker server went down and we need to
-	 *  relocate the client to a new worker server, if available. If no other worker servers are
-	 *  available the client operates in disconnected mode.
-	 */
-	public static Result showPaintRoomOnNewServer()
-	{
-		DynamicForm dynamicForm = form().bindFromRequest();
-		Logger.info(dynamicForm.data().toString());
-		String painterName = dynamicForm.get("painter_name_redirect");
-		String sessionName = dynamicForm.get("paint_room_name_redirect");
-		
-		String workerServerCanvasURL = AppUtils.getWorkerServerCanvasURL(sessionName, painterName);
-		Logger.info("Painter : " + painterName + ", Paintroom : " + sessionName + " , URL : " + workerServerCanvasURL);
-
-		// Redirect to error page, if no live preferred server found !!
-		if(workerServerCanvasURL.contains("DISCONNECTED")) {
-			return badRequest("Failed to get preferred server for paintroom " + sessionName + 
-					", painter " + painterName + ". URL generated : " + workerServerCanvasURL);
-		}
-		
-		// Else redirect to the canvas app on the chosen worker server URL.
-		return redirect(workerServerCanvasURL);		
+		String preferredServerIP = AppUtils.getIPAddress();
+		String failoverIP = AppUtils.getFailoverIPAddress(preferredServerIP);
+		String failoverServerCanvasURL = "http://" + failoverIP + ":9000/canvas?paintroom=" + paintroom + "&painter=" + painter;
+		return ok(canvas.render(paintroom, painter, preferredServerIP, failoverServerCanvasURL));
 	}
 	
 	/**

@@ -67,8 +67,7 @@ $(document).ready(function () {
         is_connected = false;
         
         // Check if this is a normal client disconnect or preferred server failure
-        //var is_normal_client_disconnect = checkIfNormalClientDisconnect();
-        var is_normal_client_disconnect = false;
+        var is_normal_client_disconnect = checkIfNormalClientDisconnect();
         
         /**
          * In case, this is not a normal client disconnect then need to figure out if there are any
@@ -76,8 +75,7 @@ $(document).ready(function () {
          * worker server, else operate in the disconnected mode.
          */
         if(is_normal_client_disconnect == false) {
-        	//var is_disconnected_mode = checkIfDisconnectedMode();
-        	var is_disconnected_mode = false;
+        	var is_disconnected_mode = checkIfDisconnectedMode();
         	// Preferred server is down. Migrate the client to a new worker server
         	if(!is_disconnected_mode) {
         		console.log("Preferred server down. Migrating client to a new worker server ..");
@@ -100,7 +98,6 @@ $(document).ready(function () {
      */
     function checkIfNormalClientDisconnect()
     {
-    	console.log("Inside function ..");
     	var is_normal_client_disconnect = false;
     	var api_url = SESSION_MGR_API_URL + "operation=getServerStatus&serverIP=" + server_ip_address;
     	
@@ -110,7 +107,7 @@ $(document).ready(function () {
         $.ajax({
             type: "GET",
             url: SESSION_MGR_API_URL,
-            data: "operation=getServerStatus&serverIP=" + "127.0.0.1",            
+            data: "operation=getServerStatus&serverIP=" + server_ip_address,            
     	    async:false,            
             success: function(response) {
             	console.log("API Result : " + response);
@@ -154,7 +151,7 @@ $(document).ready(function () {
         	is_disconnected_mode = true;
         }
         
-    	return is_normal_client_disconnect;
+    	return is_disconnected_mode;
     }
     
     /**
@@ -166,6 +163,9 @@ $(document).ready(function () {
     	$("#failure_handler").show();
     }
     
+    /**
+     * Function that is invoked when the client is operating in disconnected mode.
+     */
     function handleDisconnectedMode()
     {
     	

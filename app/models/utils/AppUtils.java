@@ -2,21 +2,17 @@ package models.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.codehaus.jackson.JsonNode;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
+import models.Constants;
 import play.Logger;
 import play.api.libs.concurrent.Promise;
 import play.api.libs.ws.Response;
 import play.api.libs.ws.WS;
-import play.libs.Json;
+
+import com.google.common.collect.Maps;
 
 /**
  * Simple utility functions for this application.
@@ -31,12 +27,11 @@ public class AppUtils {
 	static {
 		local2PublicIPMap.put("10.206.38.9", 		"54.204.106.44");
 		local2PublicIPMap.put("10.238.200.199", 	"54.196.108.77");
-		local2PublicIPMap.put("10.210.175.237", 	"54.226.244.84");
+		//local2PublicIPMap.put("10.210.175.237", 	"54.226.244.84");
 	}
 	
 	// Prashant's running Tomcat instance that hosts session manager API.
-	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.52";
-	public static final String SESSION_MANAGER_BASE_URL = "http://" + SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
+	public static final String SESSION_MANAGER_BASE_URL = "http://" + Constants.SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
 	
 	public static final String HTTP_STR = "http://";
 	public static final String WORKER_SERVER_URL = ":9000/replicate?";
@@ -106,6 +101,26 @@ public class AppUtils {
 		}
 		
 		return ipAddress;
+	}
+	
+	/**
+	 * Gets a failover IP address for the current worker server.
+	 * @param primaryIP
+	 * @return
+	 */
+	public static String getFailoverIPAddress(String primaryIP)
+	{
+		String failoverIP = null;
+		Collection<String> workerServerIPList = local2PublicIPMap.values();
+		for(String ip : workerServerIPList) {
+			if(!ip.equals(primaryIP)) {
+				failoverIP = ip;
+				break;
+			}
+		}
+		
+		Logger.info("Found failover IP " + failoverIP + " for primary IP " + primaryIP);
+		return failoverIP;
 	}
 	
 	/**

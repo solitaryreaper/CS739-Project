@@ -40,5 +40,5 @@ public class Constants {
 
 	// Session manager constants
 	// Prashant's running tomcat instance that hosts session manager API.
-	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.217";
+	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.52";
 }

@@ -28,8 +28,12 @@ $(document).ready(function () {
     var color = 'blue';
     var size = 5;
     
-    var SESSION_MGR_API_URL = "http://54.201.156.52:8080/CollabDraw/serverOps?";
+    var SESSION_MGR_IP_ADDRESS = "54.201.156.52";
+    var SESSION_MGR_API_URL = "http://" + SESSION_MGR_IP_ADDRESS + ":8080/CollabDraw/serverOps?";
 
+    // Events stored in localstorage during disconnected mode.
+    var local_events_ctr = 0;
+    
     // Send the painter name in each event to identify the client to the server.
     var user_id = $("#painter_name").text();
     console.log("Created painter " + user_id);
@@ -57,6 +61,7 @@ $(document).ready(function () {
         if (is_connected) {
             console.log("Bootstrapping prior events for the current session on local client ..");
             dummy_initial_bootstrap();
+            load_localstorage_events();
         } else {
             console.log("Not connected via websocket yet during bootstrapping ..");
         }
@@ -120,19 +125,16 @@ $(document).ready(function () {
     }
     
     /**
-     * Checks if the websocket disconnect happened because the client ended its session or
-     * because the preferred server went down.
+     * Checks if the specified worker server is up or not.
      */
-    function checkIfNormalClientDisconnect()
+    function checkIfServerIsUp(server_ip_address)
     {
-    	var is_normal_client_disconnect = false;
-    	var api_result = "";
-    	
-    	console.log("Invoking a synchronous AJAX call to check for normal client disconnect ..");
+    	var is_server_up = false;
+    	console.log("Invoking a synchronous AJAX call to check for server's status ..");
         $.ajax({
             type: "GET",
             url: SESSION_MGR_API_URL,
-            data: "operation=getServerStatus&serverIP=" + preferred_ip_address,            
+            data: "operation=getServerStatus&serverIP=" + server_ip_address,            
     	    async:false,            
             success: function(response) {
             	console.log("API Result : " + response);
@@ -145,10 +147,25 @@ $(document).ready(function () {
         
         console.log("API Result for normal client disconnect mode determination is " + api_result);
         if(api_result == "reachable") {
-        	is_normal_client_disconnect = true;
-        }
+        	is_server_up = true;
+        }    	
         
-    	return is_normal_client_disconnect;
+    	return is_server_up;
+    }
+    
+    /**
+     * Checks if the websocket disconnect happened because the client ended its session or
+     * because the preferred server went down.
+     */
+    function checkIfNormalClientDisconnect()
+    {
+    	var is_server_up = checkIfServerIsUp(preferred_ip_address);
+    	console.log("Normal client disconnect : " + is_server_up);
+    	if(is_server_up) {
+    		return true;
+    	}
+    	
+    	return false;
     }
     
     /**
@@ -193,7 +210,8 @@ $(document).ready(function () {
      */
     function handleDisconnectedMode()
     {
-    	
+    	// Show the hidden symbol to suggest that the user is operating in disconnected/offline mode.
+    	$("#disconnected_handler").show();
     }
     
     // Handle incoming messages/events from the server via websocket duplex connection
@@ -207,9 +225,10 @@ $(document).ready(function () {
     // Send local client messages/events to the server via websocket duplex connection
     function sendMsgToServer(msg) {
         console.log("Sending a message to server on websocket ..");
+        var msg_str = JSON.stringify(msg);
         if (is_connected) {
-            primary_sock.send(JSON.stringify(msg));
-            replicate_sock.send(JSON.stringify(msg));
+            primary_sock.send(msg_str);
+            replicate_sock.send(msg_str);
         }
     }
 
@@ -255,7 +274,28 @@ $(document).ready(function () {
             end_y: curr_mouse.y,
             name: user_id
         }
-        sendMsgToServer(msg);
+        
+        // If connected, send event to the server
+        if(is_connected) {
+            sendMsgToServer(msg);
+        }
+        // If disconnected store the events locally in HTML5 localstorage
+        else {
+        	// check if the server was in disconnected state and is now connected
+        	var is_server_up = checkIfServerIsUp(preferred_ip_address);
+        	if(!is_server_up) {
+            	console.log("Storing events locally in HTML5 storage ..");
+            	localStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
+            	local_events_ctr = local_events_ctr + 1;
+        	}
+        	else {
+        	    primary_sock = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
+        	    console.log("Re-initializing a new websocket connection : " + location.host + " at client for paintroom " + paint_room_name);
+        	    is_connected = true;
+        	    
+        	    $("#disconnected_handler").hide();
+        	}
+        }
     };
 
     /**
@@ -292,6 +332,20 @@ $(document).ready(function () {
 
         sendMsgToServer(msg);
         console.log("Sent dummy event for user " + user_id + ", message " + JSON.stringify(msg));
+    }
+    
+    /**
+     * Loads all the events stored in localstorage when the client was operating in the disconnected
+     * or offline mode.
+     */
+    function load_localstorage_events() {
+    	console.log("Loading local storage elements ..");
+    	for(var event in localStorage) {
+    		sendMsgToServer(JSON.parse(localStorage[event]));
+    	}
+    	
+    	console.log("Emptying local storage events ..");
+    	localStorage.clear();
     }
     
 });

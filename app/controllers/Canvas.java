@@ -46,9 +46,11 @@ public class Canvas extends Controller {
 	 */
 	public static Result showPaintRoom(String paintroom, String painter) {
 		Logger.info("Rendering the canvas " + paintroom + " for user " + painter);
+		
 		String preferredServerIP = AppUtils.getIPAddress();
 		String replicateIP = AppUtils.getFailoverIPAddress(preferredServerIP);
 		String failoverServerCanvasURL = "http://" + replicateIP + ":9000/canvas?paintroom=" + paintroom + "&painter=" + painter;
+
 		return ok(canvas.render(paintroom, painter, preferredServerIP, replicateIP, failoverServerCanvasURL));
 	}
 	
@@ -110,8 +112,6 @@ public class Canvas extends Controller {
             	int endX = json.get(Constants.END_X).getIntValue();
             	int endY = json.get(Constants.END_Y).getIntValue();
 	            	
-            	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);
-            	
             	Logger.info("Paintrooms : " + allPaintRooms.keySet().toString());
             	if(allPaintRooms.containsKey(paintroom)) {
             		// Replay this event on the all the clients hosted on this worker server.
@@ -129,6 +129,8 @@ public class Canvas extends Controller {
             	else {
             		Logger.info("Skipped replay of event on canvas because paintroom not active on server " + paintroom);
             	}
+            	
+            	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);            	
 	         } 
 	      });
 	      

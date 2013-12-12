@@ -15,7 +15,7 @@ import play.Logger;
 public class Global extends GlobalSettings{
 	@Override
 	  public void onStart(Application app) {
-	    Logger.info("Application has started ..");
+	    Logger.info("Worker server web application has started ..");
 	    boolean isServerRegistered = ServerMetaHandler.registerServer();
 	    if(!isServerRegistered) {
 	    	throw new RuntimeException("Failed to register the local worker server with session manager.");

@@ -31,6 +31,13 @@
 		</button>
 	</div>
 	
+	<!-- In case the client is operating in disconnected mode, show this marker to indicate to
+		the client
+	-->
+	<div id="disconnected_handler" align="center">
+		<h4 class="text-danger"><font color="red">Disconnected mode .. !!</font></h4>	
+	</div>
+	
 	<script type="text/javascript" src = "@routes.Assets.at("javascripts/render.js")"></script>
 	
 	<script type="text/javascript">           
@@ -41,6 +48,7 @@
 		$("#replicate_ip_address").hide();
 		
 		$("#failure_handler").hide();
+		$("#disconnected_handler").hide();
 	});
 	</script>		
 }

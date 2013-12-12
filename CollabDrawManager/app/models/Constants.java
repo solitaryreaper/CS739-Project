@@ -1,3 +1,4 @@
+package models;
 
 public class Constants {
 	// Prashant's running Tomcat instance that hosts session manager API.

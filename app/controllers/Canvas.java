@@ -131,7 +131,7 @@ public class Canvas extends Controller {
             		}            		
             	}
             	else {
-            		Logger.info("Skipped replay of event on canvas because paintroom not active on server " + paintroom);
+            		Logger.info("Skipped replay of event on canvas because paintroom" + paintroom + " not active on server ");
             	}
             	
             	Stopwatch dbEventWatch = new Stopwatch();

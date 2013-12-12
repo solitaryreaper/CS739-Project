@@ -155,6 +155,7 @@ $(document).ready(function () {
         });
         
         console.log("API Result for normal client disconnect mode determination is " + api_result);
+        api_result = $.trim(api_result);
         if(api_result == "reachable") {
         	is_server_up = true;
         }    	
@@ -197,9 +198,14 @@ $(document).ready(function () {
     	    async:false
         });
         
-        console.log("API Result for disconnected mode determination is " + api_result);
+        console.log("API Result for disconnected mode determination is " + api_result + "..");
+        api_result = $.trim(api_result);
         if(api_result == "DISCONNECTED") {
+        	console.log("YES disconnected !!");
         	is_disconnected_mode = true;
+        }
+        else {
+        	console.log("Not disconnected " + api_result + "..")
         }
         
     	return is_disconnected_mode;

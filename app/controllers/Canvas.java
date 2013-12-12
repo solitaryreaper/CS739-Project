@@ -101,15 +101,15 @@ public class Canvas extends Controller {
 	    // Called when the Websocket Handshake is done.
 	    public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
 	     
-	      Logger.info("Received client request to replicate for paintroom " + paintroom + " ..");
+	      Logger.debug("Received client request to replicate for paintroom " + paintroom + " ..");
 	    	
 	      // For each event received on the socket,
 	      in.onMessage(new F.Callback<JsonNode>() {
 	         public void invoke(JsonNode json) {
-	        	Stopwatch eventWatch = new Stopwatch();
-	        	eventWatch.start();
+	        	//Stopwatch eventWatch = new Stopwatch();
+	        	//eventWatch.start();
 	        	 
-	        	Logger.info("Recieved a new event to replicate ..");
+	        	Logger.debug("Recieved a new event to replicate ..");
 	            String painter = json.get(Constants.PAINTER_NAME).getTextValue();
             	int startX = json.get(Constants.START_X).getIntValue();
             	int startY = json.get(Constants.START_Y).getIntValue();
@@ -131,17 +131,17 @@ public class Canvas extends Controller {
             		}            		
             	}
             	else {
-            		Logger.info("Skipped replay of event on canvas because paintroom" + paintroom + " not active on server ");
+            		Logger.debug("Skipped replay of event on canvas because paintroom" + paintroom + " not active on server ");
             	}
             	
-            	Stopwatch dbEventWatch = new Stopwatch();
-            	dbEventWatch.start();
+            	//Stopwatch dbEventWatch = new Stopwatch();
+            	//dbEventWatch.start();
             	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);
-            	dbEventWatch.stop();
+            	//dbEventWatch.stop();
             	
-            	eventWatch.stop();
+            	//eventWatch.stop();
             	
-            	Logger.info("Replicate event : " + eventWatch.elapsedMillis() + " ms , DB : " + dbEventWatch.elapsedMillis() + " ms ");
+            	//Logger.info("Replicate event : " + eventWatch.elapsedMillis() + " ms , DB : " + dbEventWatch.elapsedMillis() + " ms ");
 	         } 
 	      });
 	      

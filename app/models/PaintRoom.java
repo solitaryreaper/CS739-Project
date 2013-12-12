@@ -85,10 +85,10 @@ public class PaintRoom {
         in.onMessage(new F.Callback<JsonNode>() {
             @Override
             public void invoke(JsonNode json) throws Throwable {
-            	websktIngestionEventWatch.reset();
-            	dbIngestionEventWatch.reset();
+            	//websktIngestionEventWatch.reset();
+            	//dbIngestionEventWatch.reset();
             	
-            	websktIngestionEventWatch.start();
+            	//websktIngestionEventWatch.start();
 
             	String name = json.get(Constants.PAINTER_NAME).getTextValue();
             	Painter painter = null;
@@ -153,7 +153,7 @@ public class PaintRoom {
             	int endX = json.get(Constants.END_X).getIntValue();
             	int endY = json.get(Constants.END_Y).getIntValue();
             	
-            	dbIngestionEventWatch.start();
+            	//dbIngestionEventWatch.start();
             	dbService.insertPaintBrushEvents(paintRoom, painter.getName(), startX, startY, endX, endY);
             	
             	/*
@@ -167,13 +167,14 @@ public class PaintRoom {
             	}
             	*/
             	
-            	dbIngestionEventWatch.stop();
+            	//dbIngestionEventWatch.stop();
             	
-            	websktIngestionEventWatch.stop();
+            	//websktIngestionEventWatch.stop();
             	
             	// Collect the profiling stats for the current event ingestion
             	++totalWebSktEvents;
             	++totalDbEvents;
+            	/*
             	long runningWebSocketEvtTime = websktIngestionEventWatch.elapsedMillis() + 
             			runTimeStats.get(Constants.WEBSOCKET_EVENT_TIMER);
             	long runningDbEvtTime = dbIngestionEventWatch.elapsedMillis() + 
@@ -181,6 +182,7 @@ public class PaintRoom {
             	
             	runTimeStats.put(Constants.WEBSOCKET_EVENT_TIMER, runningWebSocketEvtTime);
             	runTimeStats.put(Constants.DB_EVENT_TIMER, runningDbEvtTime);
+            	*/
             }
         });
 
@@ -203,11 +205,13 @@ public class PaintRoom {
             	}
             	
             	// Publish the stats for the websocket to profile the application
+            	/*
             	double avgWebSktEvtTime = runTimeStats.get(Constants.WEBSOCKET_EVENT_TIMER)/(double)totalWebSktEvents;
             	double avgDbEvtTime = runTimeStats.get(Constants.DB_EVENT_TIMER)/(double)totalDbEvents;
             	
             	Logger.info("Average websocket event time for paintroom " + getName() + " is " + avgWebSktEvtTime + " ms .");
             	Logger.info("Average DB insert event time for paintroom " + getName() + " is " + avgDbEvtTime + " ms .");
+            	*/
             }
         });		
 	}
@@ -225,7 +229,7 @@ public class PaintRoom {
 		boolean isSuccess = true;
 		List<JsonNode> jsonEvents = JSONUtils.convertPOJOToJSON(Lists.newArrayList(event));
 		for(Painter p : painters.values()) {
-			Logger.info("Writing external event for painter " + p.getName() + " .. ");
+			Logger.debug("Writing external event for painter " + p.getName() + " .. ");
 			for(JsonNode e: jsonEvents) {
 				p.getChannel().write(e);
 			}

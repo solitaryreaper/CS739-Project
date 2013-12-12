@@ -74,14 +74,11 @@ $(document).ready(function () {
             is_connected = true;
             // Bootstrap the canvas with prior events from the server ..
             if (is_connected) {
-                if(is_reconnect_after_offline_mode == false) {
-                    console.log("Bootstrapping prior events for the current session on local client ..");                	
-                    dummy_initial_bootstrap();                	
-                }
-                else {
-                	console.log("Bootstrapping session storage events after offline mode ..");
-                    load_localstorage_events();                	
-                }
+                console.log("Bootstrapping prior events for the current session on local client ..");                	
+                dummy_initial_bootstrap();                	
+
+            	console.log("Bootstrapping session storage events after offline mode ..");
+                load_localstorage_events();                	
             } else {
                 console.log("Not connected via websocket yet during bootstrapping ..");
             }

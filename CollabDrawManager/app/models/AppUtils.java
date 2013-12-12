@@ -111,7 +111,7 @@ public class AppUtils {
 	 */
 	public static ArrayList<ServerStats> getServerStats()
 	{
-		String urlToInvoke = SESSION_MANAGER_BASE_URL + "operation=getServerStats";
+		String urlToInvoke = Constants.SESSION_MANAGER_BASE_URL + "operation=getServerStats";
 		Logger.info("getServerStatus :: urlToInvoke = " + urlToInvoke);
 				
 		String jsonServerStatusList = null;
@@ -182,7 +182,7 @@ public class AppUtils {
 	 **/
 	public static ArrayList<SessionStats> getSessionStats()
 	{
-		String urlToInvoke = SESSION_MANAGER_BASE_URL + "operation=getSessionTable";
+		String urlToInvoke = Constants.SESSION_MANAGER_BASE_URL + "operation=getSessionTable";
 		Logger.info("getSessionStats :: urlToInvoke = " + urlToInvoke);
 				
 		String jsonSessionStatusList = null;

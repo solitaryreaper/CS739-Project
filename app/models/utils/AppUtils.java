@@ -129,7 +129,6 @@ public class AppUtils {
 	 */
 	public static String getWorkerServerCanvasURL(String paintRoomName, String painter)
 	{
-		Logger.info("Inside worker server canvas url ..");
 		String ipAddress = getPreferredServerForClient(paintRoomName, painter);
 		String workerServerCanvasURL = "http://" + ipAddress + ":9000/canvas?paintroom=" + 
 				paintRoomName + "&painter=" + painter;

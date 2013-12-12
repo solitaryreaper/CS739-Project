@@ -229,7 +229,7 @@ public class PaintRoom {
 		boolean isSuccess = true;
 		List<JsonNode> jsonEvents = JSONUtils.convertPOJOToJSON(Lists.newArrayList(event));
 		for(Painter p : painters.values()) {
-			Logger.info("Writing external event for painter " + p.getName() + " .. ");
+			Logger.debug("Writing external event for painter " + p.getName() + " .. ");
 			for(JsonNode e: jsonEvents) {
 				p.getChannel().write(e);
 			}

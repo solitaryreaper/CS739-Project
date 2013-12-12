@@ -37,7 +37,7 @@ public class JSONUtils {
 			try {
 				String json = mapper.writeValueAsString(clientFormatEvent);
 				JsonNode jsonNode = mapper.readTree(json);
-				Logger.info("JSON conversion : " + jsonNode.toString());
+				Logger.debug("JSON conversion : " + jsonNode.toString());
 				if(jsonNode != null) {
 					jsonList.add(jsonNode);									
 				}

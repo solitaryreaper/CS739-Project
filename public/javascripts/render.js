@@ -290,12 +290,6 @@ $(document).ready(function () {
         }, false);
 
 
-        /* Drawing on Paint App */
-        ctx.lineWidth = size;
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = color;
-
         canvas.addEventListener('mousedown', function (e) {
             canvas.addEventListener('mousemove', onPaint, false);
         }, false);
@@ -305,7 +299,17 @@ $(document).ready(function () {
         }, false);    	
     }
 
+    function init_canvas_meta()
+    {
+        /* Drawing on Paint App */
+        ctx.lineWidth = size;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = color;    	
+    }
+    
     init_canvas_events();
+    init_canvas_meta();
     
     /**
      * Function that draws locally based on brush movements and
@@ -329,10 +333,15 @@ $(document).ready(function () {
             console.log("Broadcasting local change to all the connected clients ..");
             sendMsgToServer(msg);
         }
-        // If disconnected store the events locally in HTML5 localstorage
+        // If in disconnected mode, store the events locally in HTML5 localstorage
         else {
         	// check if the server was in disconnected state and is now connected
-        	var is_server_up = checkIfServerIsUp(preferred_ip_address);
+        	var is_server_up = false;
+        	if(sessionStorage.length % 10 == 0) {
+        		console.log("Checking server status ..");
+        		is_server_up = checkIfServerIsUp(preferred_ip_address);
+        		init_canvas_meta();
+        	}
         	if(is_server_up == false) {
             	console.log("Storing events locally in HTML5 storage ..");
             	sessionStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
@@ -340,7 +349,7 @@ $(document).ready(function () {
         	}
         	else {
         		console.log("Restoring primary websocket connection after disconnect mode ..");
-        		init_primary_websocket();
+        		init_primary_websocket(true);
         	    is_connected = true;
         	    
         	    $("#disconnected_handler").hide();
@@ -396,6 +405,7 @@ $(document).ready(function () {
     	
     	console.log("Emptying local storage events ..");
     	sessionStorage.clear();
+    	local_events_ctr = 0;
     }
     
 });

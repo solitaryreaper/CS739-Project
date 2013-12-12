@@ -56,7 +56,7 @@ $(document).ready(function () {
     var is_connected = false;
     var is_replicate_connected = false;
     
-    function init_primary_websocket(is_reconnect_after_offline_mode)
+    function init_primary_websocket()
     {
         try {
         	primary_sock = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
@@ -162,7 +162,7 @@ $(document).ready(function () {
         }    	
     }
     
-    init_primary_websocket(false);
+    init_primary_websocket();
     init_replicate_websocket();
 
     /**
@@ -308,6 +308,8 @@ $(document).ready(function () {
     init_canvas_events();
     init_canvas_meta();
     
+    var new_sock_checker = -1;
+    
     /**
      * Function that draws locally based on brush movements and
      * disseminates local draw events to the server for broadcasting ..
@@ -325,8 +327,6 @@ $(document).ready(function () {
             name: user_id
         }
         
-        var new_primary_sock_conn_initiated = false;
-        
         // If connected, send event to the server
         if(is_connected) {
             console.log("Broadcasting local change to all the connected clients ..");
@@ -334,6 +334,18 @@ $(document).ready(function () {
         }
         // If in disconnected mode, store the events locally in HTML5 localstorage
         else {
+        	console.log("Storing events locally in HTML5 storage ..");
+        	sessionStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
+        	local_events_ctr = local_events_ctr + 1;
+        	
+        	// This interval function should be set only once and called periodically to check
+        	// if the disconnected server is up.
+        	if(new_sock_checker < 0) {
+        		console.log("Starting a new interval clock ..");
+            	new_sock_checker = setInterval(function(){renew_server_socket()}, 1000);
+        	}
+
+        	/*
         	// check if the server was in disconnected state and is now connected
         	var is_server_up = false;
         	if(sessionStorage.length % 5 == 0) {
@@ -341,11 +353,6 @@ $(document).ready(function () {
         		is_server_up = checkIfServerIsUp(preferred_ip_address);
         		init_canvas_meta();
         	}
-        	
-        	console.log("Storing events locally in HTML5 storage ..");
-        	sessionStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
-        	local_events_ctr = local_events_ctr + 1;
-        	
         	if(is_server_up == true) {
         		if(new_primary_sock_conn_initiated == false) {
             		console.log("Restoring primary websocket connection after disconnect mode ..");
@@ -355,9 +362,29 @@ $(document).ready(function () {
             	    $("#disconnected_handler").hide();
         		}
         	}
+        	*/
         }
     };
 
+    /**
+     * Function that is repeatedly called to check if the disconnected server is up now.
+     */
+    function renew_server_socket()
+    {
+    	// check if the server was in disconnected state and is now connected
+    	var is_server_up = checkIfServerIsUp(preferred_ip_address);
+    	if(is_server_up == true) {
+    		console.log("Restoring primary websocket connection after disconnect mode ..");
+    		init_primary_websocket();
+    	    
+    	    $("#disconnected_handler").hide();
+    	    
+    	    // clear this polling function since the server is up now
+    	    console.log("Clearing the interval function ..");
+    	    clearInterval(new_sock_checker);
+    	}    	
+    }
+    
     /**
      * Utility function that actually draws on the canvas between specified co-ordinates.
      */

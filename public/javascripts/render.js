@@ -334,11 +334,16 @@ $(document).ready(function () {
         else {
         	// check if the server was in disconnected state and is now connected
         	var is_server_up = false;
-        	if(sessionStorage.length % 10 == 0) {
+    		console.log("Checking server status ..");
+    		is_server_up = checkIfServerIsUp(preferred_ip_address);
+    		init_canvas_meta();
+    		/*
+        	if(sessionStorage.length % 2 == 0) {
         		console.log("Checking server status ..");
         		is_server_up = checkIfServerIsUp(preferred_ip_address);
         		init_canvas_meta();
         	}
+        	*/
         	if(is_server_up == false) {
             	console.log("Storing events locally in HTML5 storage ..");
             	sessionStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));

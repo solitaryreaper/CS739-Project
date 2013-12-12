@@ -4,28 +4,33 @@
 
 	<div id="server_dashboard" class="container">
 	
-		<legend align="center"><b>Dashboard</b></legend>
+		<h3 align="center"><u>Dashboard</u></h3>
 	
 	 	<!-- SERVERS STATUS -->
-		<legend><b>Servers Status</b></legend>
-		<table class="table table-striped table-bordered table-condensed">
+		<legend><b>Worker Servers Status</b></legend>
+		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th>Server IP</th>
-					<th>is Active?<b></th>
-					<th># of Boards Serving</th>
-					<th># of Clients Serving</th>
-					<th>Last Known Heartbeat</th>
+					<th><h4>Server IP</h4></th>
+					<th><h4>is Active?</h4></th>
+					<th><h4># of Boards Serving</h4></th>
+					<th><h4># of Clients Serving</h4></th>
+					<th><h4>Last Heartbeat</h4></th>
 				</tr>
 			</thead>
 			<tbody>
                 @if(serverStatsList == null || serverStatsList.isEmpty()) {
                     <tr>
-                    	<td colspan="5" class="text-error"><h4>No Servers Active right now!</h4></td>
+                    	<td colspan="5" class="text-error"><h4>No Active Servers right now!</h4></td>
                     </tr>
                 } else {
                     @for(serverStats <- serverStatsList) {
-                        <tr align="center">
+                     	@if(serverStats.mIsReachable == true){
+                        <tr align="center" class="active">
+                        } else {
+                        <tr align="center" class="danger">
+                        }
+                        
                             <td><h4>@serverStats.mServerIP</h4></td>
                            
                             <td> 
@@ -47,18 +52,18 @@
 			
 		<!-- DRAWING BOARDS STATUS -->
 		<legend><b>Drawing Boards Status</b></legend>
-		<table class="table table-striped table-bordered table-condensed">
+		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th>Drawing Board ID</th>
-					<th>Preferred Servers<b></th>
-					<th>Users</th>
+					<th><h4>Drawing Board ID</h4></th>
+					<th><h4>Preferred Servers</h4></th>
+					<th><h4>Users</h4></th>
 				</tr>
 			</thead>
 			<tbody>
                 @if(sessionStatsList == null || sessionStatsList.isEmpty()) {
                     <tr>
-                    	<td colspan="3" class="text-error"><h4>No Active Sessions right now!</h4></td>
+                    	<td colspan="3" class="text-error"><h4>No Active Drawing Boards right now!</h4></td>
                     </tr>
                 } else {
                     @for(sessionStats <- sessionStatsList) {

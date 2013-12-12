@@ -7,7 +7,7 @@
 		<div align="right">
 			For Server Status, click on 
 			<button onclick="location.href='http://54.226.244.84:9000/server_dashboard'" id="server_dashboard" type="submit" class="btn btn-warning">
-				<b>Server Dashboard</b> 
+				<b>SERVER DASHBOARD</b> 
 			</button>  
 		</div>
 				
@@ -19,31 +19,33 @@
 					<input type="text" class="input-large" id="painter_name" name="painter_name" placeholder="Your Name">
 			</div>
 			
+			<br/>
+			
 			<h3>Select a Board</h3>
 			<div class="row">
 			 	<div class="span5"  align="center">
 					
-					<legend>Choose an Active Board</legend>
+					<legend>Existing Boards</legend>
 					<!-- List of active paint room sessions -->
 				  	<input type="text" class="input-large" id="active_session_name" name="active_session_name" placeholder="Select a session name .."> 		
 					<table class="table table-striped table-bordered table-condensed">
 						<thead>
 							<tr>
-								<th>PaintRoom</th>
-								<th>Action</th>
+								<th><h4>Paint Room</h4></th>
+								<th><h4>Select</h4></th>
 							</tr>
 						</thead>
 						<tbody>
 			                @if(activePaintRooms == null || activePaintRooms.isEmpty()) {
 			                    <tr>
-			                    	<td colspan="2" class="text-error">No Active Drawing Boards Found! </td>
+			                    	<td colspan="2" class="text-error"><h4>No Active Drawing Boards Found!<h4></td>
 			                    </tr>
 			                }
 			                
 			                @if(activePaintRooms != null && !activePaintRooms.isEmpty()) {
 			                    @for(paintRoom <- activePaintRooms) {
 			                        <tr>
-			                            <td>@paintRoom</td>
+			                            <td><h4>@paintRoom</h4></td>
 			                            <td><input type="checkbox" name="@paintRoom" id="@paintRoom" value="@paintRoom"></td>
 			                       </tr>
 			                    }
@@ -56,13 +58,13 @@
 				<div class="span2">
 				
 					<div align="center">
-						<label><h3>or</h3></label>
+						<label><h3>- or -</h3></label>
 					</div>
 				</div>
 				
 				<div class="span5"  align="center">
 					<!-- Form for creating a new paintroom session -->
-					<legend>Create a New Board</legend>
+					<legend>New Board</legend>
 				  	<input type="text" class="input-large" id="new_session_name" name="new_session_name" placeholder="Drawing Board Name">
 				  	<br/>
 				
@@ -71,8 +73,8 @@
 		
 			<br/>
 			<div align="center">
-				<button id="launch_session" type="submit" class="btn btn-success">
-					<b>Launch Drawing Board</b> 
+				<button id="launch_session" type="submit" class="btn btn-primary btn-lg">
+					<h4>Launch Drawing Board</h4> 
 				</button>  
 		   </div>
 		    

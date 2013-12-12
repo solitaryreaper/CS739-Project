@@ -26,10 +26,6 @@ import com.google.common.collect.Sets;
  */
 public class AppUtils {
 
-	// Prashant's running Tomcat instance that hosts session manager API.
-	public static final String SESSION_MGR_IP_ADDRESS = "54.201.156.52";
-	public static final String SESSION_MANAGER_BASE_URL = "http://" + SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
-	
 	/**
 	 * Returns the canvas URL on the chosen worker server for rendering the requested paintroom
 	 * for a client.
@@ -53,7 +49,7 @@ public class AppUtils {
 	 */
 	public static List<String> getActivePaintrooms()
 	{
-		String sessionsURL = SESSION_MANAGER_BASE_URL + "operation=getSessionTable";
+		String sessionsURL = Constants.SESSION_MANAGER_BASE_URL + "operation=getSessionTable";
 		String sessions = getAPIResult(sessionsURL);
 		Logger.info("Sessions string : " + sessions);
 		
@@ -87,7 +83,7 @@ public class AppUtils {
 	 */
 	private static String getPreferredServerForClient(String paintRoomName, String painter)
 	{
-		String urlToInvoke = SESSION_MANAGER_BASE_URL + "operation=getWorkerServer&sessionId=" + 
+		String urlToInvoke = Constants.SESSION_MANAGER_BASE_URL + "operation=getWorkerServer&sessionId=" + 
 				paintRoomName + "&userId=" + painter;
 		String preferredServerIP = null;
 		try {

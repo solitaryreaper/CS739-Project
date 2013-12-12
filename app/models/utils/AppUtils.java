@@ -25,13 +25,9 @@ public class AppUtils {
 	// Hack : Create a mapping of local and public IP addresses
 	public static Map<String, String> local2PublicIPMap = Maps.newHashMap();
 	static {
-		local2PublicIPMap.put("10.206.38.9", 		"54.204.106.44");
-		local2PublicIPMap.put("10.238.200.199", 	"54.196.108.77");
-		//local2PublicIPMap.put("10.210.175.237", 	"54.226.244.84");
+		local2PublicIPMap.put(Constants.EC1_PRIVATE_IP, Constants.EC1_PUBLIC_IP);
+		local2PublicIPMap.put(Constants.EC2_PRIVATE_IP, Constants.EC2_PUBLIC_IP);
 	}
-	
-	// Prashant's running Tomcat instance that hosts session manager API.
-	public static final String SESSION_MANAGER_BASE_URL = "http://" + Constants.SESSION_MGR_IP_ADDRESS +":8080/CollabDraw/serverOps?";
 	
 	public static final String HTTP_STR = "http://";
 	public static final String WORKER_SERVER_URL = ":9000/replicate?";
@@ -150,7 +146,7 @@ public class AppUtils {
 	 */
 	private static String getPreferredServerForClient(String paintRoomName, String painter)
 	{
-		String urlToInvoke = SESSION_MANAGER_BASE_URL + "operation=getWorkerServer&sessionId=" + 
+		String urlToInvoke = Constants.SESSION_MANAGER_BASE_URL + "operation=getWorkerServer&sessionId=" + 
 				paintRoomName + "&userId=" + painter;
 		String preferredServerIP = null;
 		try {

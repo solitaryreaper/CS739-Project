@@ -156,6 +156,7 @@ public class PaintRoom {
             	dbIngestionEventWatch.start();
             	dbService.insertPaintBrushEvents(paintRoom, painter.getName(), startX, startY, endX, endY);
             	
+            	/*
             	// Simulate strong consistency by pushing this event to all other servers.
             	if(destServers != null && !destServers.isEmpty()) {
             		Logger.info("Replicating data to " + destServers.size() + " destination servers ..");
@@ -164,6 +165,7 @@ public class PaintRoom {
             	else {
             		Logger.info("No destination servers found to replicate !!");
             	}
+            	*/
             	
             	dbIngestionEventWatch.stop();
             	

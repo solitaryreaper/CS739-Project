@@ -1,118 +1,89 @@
-@(activePaintRooms : List[String])
+@(activePaintRooms : List[String], serverStatsList : List[ServerStats], sessionStatsList : List[SessionStats])
 
-@main(title = "Collaborative Drawing Board") {
+@main(title = "CollabDraw Dashboard") {
 
-	<div id="sessions" class="container" align="center">
+	<div id="server_dashboard" class="container">
 	
-		<h3>Server Dashboard</h3>
-				
-		<form id="session_form" method="post" class="form-horizontal container" action="@routes.Sessionmanager.index()" onsubmit="return validate_form()">
+		<legend align="center"><b>Dashboard</b></legend>
+	
+	 	<!-- SERVERS STATUS -->
+		<legend><b>Servers Status</b></legend>
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>Server IP</th>
+					<th>is Active?<b></th>
+					<th># of Boards Serving</th>
+					<th># of Clients Serving</th>
+					<th>Last Known Heartbeat</th>
+				</tr>
+			</thead>
+			<tbody>
+                @if(serverStatsList == null || serverStatsList.isEmpty()) {
+                    <tr>
+                    	<td colspan="5" class="text-error"><h4>No Servers Active right now!</h4></td>
+                    </tr>
+                } else {
+                    @for(serverStats <- serverStatsList) {
+                        <tr align="center">
+                            <td><h4>@serverStats.mServerIP</h4></td>
+                           
+                            <td> 
+                            @if(serverStats.mIsReachable == true){
+                            	<img src="@routes.Assets.at("images/correct.jpg")"/>
+                            } else {
+                            	<img src="@routes.Assets.at("images/wrong.png")"/>
+                            }</td>
+                            
+                            <td><h4>@serverStats.mSessionServingCount</h4></td>
+                            <td><h4>@serverStats.mClientServingCount</h4></td>
+                            
+                            <td><h4>@serverStats.mLastHeartBeat</h4></td>
+                       </tr>
+                    }
+                }				
+			</tbody>
+		</table>
 			
-			<div class="row" align="center">
-					<h3>Howdy! What's your name?</h3>
-				
-					<input type="text" class="input-large" id="painter_name" name="painter_name" placeholder="Your Name">
-			</div>
-			
-			<h3>Select a Board</h3>
-			<div class="row">
-			 	<div class="span5"  align="center">
-					
-					<legend>Choose an Active Board</legend>
-					<!-- List of active paint room sessions -->
-				  	<input type="text" class="input-large" id="active_session_name" name="active_session_name" placeholder="Select a session name .."> 		
-					<table class="table table-striped table-bordered table-condensed">
-						<thead>
-							<tr>
-								<th>PaintRoom</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-			                @if(activePaintRooms == null || activePaintRooms.isEmpty()) {
-			                    <tr>
-			                    	<td colspan="2" class="text-error">No Active Drawing Boards Found! </td>
-			                    </tr>
-			                }
-			                
-			                @if(activePaintRooms != null && !activePaintRooms.isEmpty()) {
-			                    @for(paintRoom <- activePaintRooms) {
-			                        <tr>
-			                            <td>@paintRoom</td>
-			                            <td><input type="checkbox" name="@paintRoom" id="@paintRoom" value="@paintRoom"></td>
-			                       </tr>
-			                    }
-			                }				
-						</tbody>
-					</table>
-				
-				</div>
-				
-				<div class="span2">
-				
-					<div align="center">
-						<label><h3>or</h3></label>
-					</div>
-				</div>
-				
-				<div class="span5"  align="center">
-					<!-- Form for creating a new paintroom session -->
-					<legend>Create a New Board</legend>
-				  	<input type="text" class="input-large" id="new_session_name" name="new_session_name" placeholder="Drawing Board Name">
-				  	<br/>
-				
-				</div>
-			</div>
-		
-			<br/>
-			<div align="center">
-				<button id="launch_session" type="submit" class="btn btn-success">
-					<b>Launch Drawing Board</b> 
-				</button>  
-		   </div>
-		    
-		</form>		
+		<!-- DRAWING BOARDS STATUS -->
+		<legend><b>Drawing Boards Status</b></legend>
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>Drawing Board ID</th>
+					<th>Preferred Servers<b></th>
+					<th>Users</th>
+				</tr>
+			</thead>
+			<tbody>
+                @if(sessionStatsList == null || sessionStatsList.isEmpty()) {
+                    <tr>
+                    	<td colspan="3" class="text-error"><h4>No Active Sessions right now!</h4></td>
+                    </tr>
+                } else {
+                    @for(sessionStats <- sessionStatsList) {
+                        <tr align="center">
+                            <td><h4>@sessionStats.mSessionID</h4></td>
+                           
+                           @if(sessionStats.mPreferredServers == null || sessionStats.mPreferredServers.isEmpty()) {
+                            <td class="text-error"><h4>No Preferred Servers for this Board</h4></td>
+                            } else {
+                            <td><h4>@sessionStats.mPreferredServers</h4></td>
+                            }
+                            
+                            @if(sessionStats.mUsers == null || sessionStats.mUsers.isEmpty()) {
+                            <td class="text-error"><h4>No Users for this Board</h4></td>
+                            } else {
+                           	<td><h4>@sessionStats.mUsers</h4></td>
+                            }
+                            
+                       </tr>
+                    }
+                }				
+			</tbody>
+		</table>
+
+
 	</div>
-	
-	<script type="text/javascript">           
-	$(document).ready(function() {
-		// HACK : To capture the value of the session to join via a clickable button, this hidden
-		// element has been created. 
-		$("#active_session_name").hide();
-	});
-	
-	// Get the active session which user wants to join ..
-    $(":checkbox").change(function(){
-    	if(this.checked) {
-	    	var cboxValue = $(this).attr("value");
-	    	$('#active_session_name').val(cboxValue);
-			console.log("Set active session : " + cboxValue);
-    	}
-    }); 
-	
-	// validates the form
-	function validate_form()
-	{
-		var painter_name = $("#painter_name").val();
-		// Must select a painter name for the current client
-		if(painter_name == "" || !painter_name) {
-			alert("Please enter a valid Painter Name !!");
-			return false;
-		}
-		
-		var active_session_name = $("#active_session_name").val();
-		var new_session_name = $("#new_session_name").val();
-		
-		// Must either create a new sessior or choose an existing session - not both !!
-		if((active_session_name && new_session_name) ||
-		   (!active_session_name && !new_session_name)
-		  ) 
-		{
-			alert("Please either choose an existing board or create a new one !!");
-			return false;
-		}
-		
-		return true;
-	}	
-	</script>	
+
 }

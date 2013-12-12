@@ -73,6 +73,7 @@ $(document).ready(function () {
         
         // Check if this is a normal client disconnect or preferred server failure
         var is_normal_client_disconnect = checkIfNormalClientDisconnect();
+        console.log("Normal disconnect ? " + is_normal_client_disconnect);
         
         /**
          * In case, this is not a normal client disconnect then need to figure out if there are any
@@ -81,8 +82,9 @@ $(document).ready(function () {
          */
         if(is_normal_client_disconnect == false) {
         	var is_disconnected_mode = checkIfDisconnectedMode();
+        	console.log("Is disconnected ? " + is_disconnected_mode);
         	// Preferred server is down. Migrate the client to a new worker server
-        	if(!is_disconnected_mode) {
+        	if(is_disconnected_mode == false) {
         		console.log("Preferred server down. Migrating client to a new worker server ..");
         		handlePreferredServerDown();
         	}
@@ -94,6 +96,7 @@ $(document).ready(function () {
         }
         else {
         	console.log("Client has ended its session ..");
+        	localStorage.clear();
         }
     }
 
@@ -109,19 +112,25 @@ $(document).ready(function () {
     }
     console.log("Replicate IP address : " + replicate_ip_address);
     
-    var replicate_sock = new WebSocket("ws://" + replicate_ip_address + ":9000" + "/synchronize?paintroom=" + paint_room_name);
-    var is_replicate_connected = false;
-    console.log("Opened a replicate socket connection to " + replicate_ip_address + " ... ");
-    
-    /* Websocket event handlers/callbacks for replicate server */
-    replicate_sock.onopen = function () {
-        console.log("Connected via websocket to replicate server ..");
-        is_replicate_connected = true;
-    }
+    var is_replicate_connected = false;    
+    var replicate_sock;
+    try {
+    	replicate_sock = new WebSocket("ws://" + replicate_ip_address + ":9000" + "/synchronize?paintroom=" + paint_room_name);
+        console.log("Opened a replicate socket connection to " + replicate_ip_address + " ... ");
+        
+        /* Websocket event handlers/callbacks for replicate server */
+        replicate_sock.onopen = function () {
+            console.log("Connected via websocket to replicate server ..");
+            is_replicate_connected = true;
+        }
 
-    replicate_sock.onclose = function () {
-        console.log("Websocket disconnected to replicate server ..");
-        is_replicate_connected = false;
+        replicate_sock.onclose = function () {
+            console.log("Websocket disconnected to replicate server ..");
+            is_replicate_connected = false;
+        }    	
+    }
+    catch(e) {
+    	console.log("Replicate websocket connection establishment failed with " + replicate_ip_address);
     }
     
     /**
@@ -161,7 +170,7 @@ $(document).ready(function () {
     {
     	var is_server_up = checkIfServerIsUp(preferred_ip_address);
     	console.log("Normal client disconnect : " + is_server_up);
-    	if(is_server_up) {
+    	if(is_server_up == true) {
     		return true;
     	}
     	
@@ -228,7 +237,9 @@ $(document).ready(function () {
         var msg_str = JSON.stringify(msg);
         if (is_connected) {
             primary_sock.send(msg_str);
-            replicate_sock.send(msg_str);
+            if(is_replicate_connected) {
+                replicate_sock.send(msg_str);            	
+            }
         }
     }
 

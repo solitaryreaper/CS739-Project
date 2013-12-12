@@ -22,6 +22,7 @@ import play.mvc.Result;
 import play.mvc.WebSocket;
 import views.html.canvas;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 /**
  * Main controller class that handles the canvas 2D drawing for the web application.
@@ -105,6 +106,8 @@ public class Canvas extends Controller {
 	      // For each event received on the socket,
 	      in.onMessage(new F.Callback<JsonNode>() {
 	         public void invoke(JsonNode json) {
+	        	Stopwatch eventWatch = new Stopwatch();
+	        	 
 	        	Logger.info("Recieved a new event to replicate ..");
 	            String painter = json.get(Constants.PAINTER_NAME).getTextValue();
             	int startX = json.get(Constants.START_X).getIntValue();
@@ -130,7 +133,13 @@ public class Canvas extends Controller {
             		Logger.info("Skipped replay of event on canvas because paintroom not active on server " + paintroom);
             	}
             	
-            	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);            	
+            	Stopwatch dbEventWatch = new Stopwatch();
+            	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);
+            	dbEventWatch.stop();
+            	
+            	eventWatch.stop();
+            	
+            	Logger.info("Replicate event : " + eventWatch.elapsedMillis() + " ms , DB : " + dbEventWatch.elapsedMillis() + " ms ");
 	         } 
 	      });
 	      

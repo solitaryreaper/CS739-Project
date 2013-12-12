@@ -107,6 +107,7 @@ public class Canvas extends Controller {
 	      in.onMessage(new F.Callback<JsonNode>() {
 	         public void invoke(JsonNode json) {
 	        	Stopwatch eventWatch = new Stopwatch();
+	        	eventWatch.start();
 	        	 
 	        	Logger.info("Recieved a new event to replicate ..");
 	            String painter = json.get(Constants.PAINTER_NAME).getTextValue();
@@ -134,6 +135,7 @@ public class Canvas extends Controller {
             	}
             	
             	Stopwatch dbEventWatch = new Stopwatch();
+            	dbEventWatch.start();
             	dbService.insertPaintBrushEvents(paintroom, painter, startX, startY, endX, endY);
             	dbEventWatch.stop();
             	

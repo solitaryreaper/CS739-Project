@@ -56,7 +56,7 @@ $(document).ready(function () {
     var is_connected = false;
     var is_replicate_connected = false;
     
-    function init_primary_websocket()
+    function init_primary_websocket(is_reconnect_after_offline_mode)
     {
         try {
         	primary_sock = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
@@ -74,9 +74,14 @@ $(document).ready(function () {
             is_connected = true;
             // Bootstrap the canvas with prior events from the server ..
             if (is_connected) {
-                console.log("Bootstrapping prior events for the current session on local client ..");
-                dummy_initial_bootstrap();
-                load_localstorage_events();
+                if(is_reconnect_after_offline_mode == false) {
+                    console.log("Bootstrapping prior events for the current session on local client ..");                	
+                    dummy_initial_bootstrap();                	
+                }
+                else {
+                	console.log("Bootstrapping session storage events after offline mode ..");
+                    load_localstorage_events();                	
+                }
             } else {
                 console.log("Not connected via websocket yet during bootstrapping ..");
             }
@@ -160,7 +165,7 @@ $(document).ready(function () {
         }    	
     }
     
-    init_primary_websocket();
+    init_primary_websocket(false);
     init_replicate_websocket();
 
     /**
@@ -271,31 +276,37 @@ $(document).ready(function () {
         }
     }
 
-    /* Mouse Capturing Work */
-    canvas.addEventListener('mousemove', function (e) {
-        last_mouse.x = curr_mouse.x;
-        last_mouse.y = curr_mouse.y;
+    // Canvas event handlers
+    function init_canvas_events()
+    {
+        /* Mouse Capturing Work */
+        canvas.addEventListener('mousemove', function (e) {
+            last_mouse.x = curr_mouse.x;
+            last_mouse.y = curr_mouse.y;
 
-        var o = $(canvas).offset();
-        curr_mouse.x = e.pageX - this.offsetLeft;
-        curr_mouse.y = e.pageY - this.offsetTop;
-    }, false);
+            var o = $(canvas).offset();
+            curr_mouse.x = e.pageX - this.offsetLeft;
+            curr_mouse.y = e.pageY - this.offsetTop;
+        }, false);
 
 
-    /* Drawing on Paint App */
-    ctx.lineWidth = size;
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = color;
+        /* Drawing on Paint App */
+        ctx.lineWidth = size;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = color;
 
-    canvas.addEventListener('mousedown', function (e) {
-        canvas.addEventListener('mousemove', onPaint, false);
-    }, false);
+        canvas.addEventListener('mousedown', function (e) {
+            canvas.addEventListener('mousemove', onPaint, false);
+        }, false);
 
-    canvas.addEventListener('mouseup', function () {
-        canvas.removeEventListener('mousemove', onPaint, false);
-    }, false);
+        canvas.addEventListener('mouseup', function () {
+            canvas.removeEventListener('mousemove', onPaint, false);
+        }, false);    	
+    }
 
+    init_canvas_events();
+    
     /**
      * Function that draws locally based on brush movements and
      * disseminates local draw events to the server for broadcasting ..

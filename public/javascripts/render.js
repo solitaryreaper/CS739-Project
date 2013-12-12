@@ -325,6 +325,8 @@ $(document).ready(function () {
             name: user_id
         }
         
+        var new_primary_sock_conn_initiated = false;
+        
         // If connected, send event to the server
         if(is_connected) {
             console.log("Broadcasting local change to all the connected clients ..");
@@ -334,27 +336,24 @@ $(document).ready(function () {
         else {
         	// check if the server was in disconnected state and is now connected
         	var is_server_up = false;
-    		console.log("Checking server status ..");
-    		is_server_up = checkIfServerIsUp(preferred_ip_address);
-    		init_canvas_meta();
-    		/*
-        	if(sessionStorage.length % 2 == 0) {
+        	if(sessionStorage.length % 5 == 0) {
         		console.log("Checking server status ..");
         		is_server_up = checkIfServerIsUp(preferred_ip_address);
         		init_canvas_meta();
         	}
-        	*/
-        	if(is_server_up == false) {
-            	console.log("Storing events locally in HTML5 storage ..");
-            	sessionStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
-            	local_events_ctr = local_events_ctr + 1;
-        	}
-        	else {
-        		console.log("Restoring primary websocket connection after disconnect mode ..");
-        		init_primary_websocket(true);
-        	    is_connected = true;
-        	    
-        	    $("#disconnected_handler").hide();
+        	
+        	console.log("Storing events locally in HTML5 storage ..");
+        	sessionStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
+        	local_events_ctr = local_events_ctr + 1;
+        	
+        	if(is_server_up == true) {
+        		if(new_primary_sock_conn_initiated == false) {
+            		console.log("Restoring primary websocket connection after disconnect mode ..");
+            		init_primary_websocket(true);
+            		new_primary_sock_conn_initiated = true;
+            	    
+            	    $("#disconnected_handler").hide();
+        		}
         	}
         }
     };

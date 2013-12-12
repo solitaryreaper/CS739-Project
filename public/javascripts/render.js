@@ -300,7 +300,7 @@ $(document).ready(function () {
         else {
         	// check if the server was in disconnected state and is now connected
         	var is_server_up = checkIfServerIsUp(preferred_ip_address);
-        	if(!is_server_up) {
+        	if(is_server_up == false) {
             	console.log("Storing events locally in HTML5 storage ..");
             	localStorage.setItem(local_events_ctr.toString(), JSON.stringify(msg));
             	local_events_ctr = local_events_ctr + 1;

@@ -225,7 +225,7 @@ public class PaintRoom {
 	 */
 	public static boolean ingestExternalEvents(PaintBrushEvent event, String paintRoom)
 	{
-		Logger.info("Writing external brush events for paintroom " + paintRoom + " .. ");
+		Logger.debug("Writing external brush events for paintroom " + paintRoom + " .. ");
 		boolean isSuccess = true;
 		List<JsonNode> jsonEvents = JSONUtils.convertPOJOToJSON(Lists.newArrayList(event));
 		for(Painter p : painters.values()) {

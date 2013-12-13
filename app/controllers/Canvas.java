@@ -116,7 +116,7 @@ public class Canvas extends Controller {
             	int endX = json.get(Constants.END_X).getIntValue();
             	int endY = json.get(Constants.END_Y).getIntValue();
 	            	
-            	Logger.info("Paintrooms : " + allPaintRooms.keySet().toString());
+            	Logger.debug("Paintrooms : " + allPaintRooms.keySet().toString());
             	if(allPaintRooms.containsKey(paintroom)) {
             		// Replay this event on the all the clients hosted on this worker server.
             		Painter painterObj = new Painter(painter);
@@ -124,10 +124,10 @@ public class Canvas extends Controller {
             		PaintBrushEvent event = new PaintBrushEvent(paintroom, painterObj, startX, startY, endX, endY, eventId);
             		boolean isSuccess = PaintRoom.ingestExternalEvents(event, paintroom);
             		if(isSuccess) {
-            			Logger.info("Successfully ingested external events on local worker server ..");
+            			Logger.debug("Successfully ingested external events on local worker server ..");
             		}
             		else {
-            			Logger.info("Failed to ingest external events on local worker server ..");
+            			Logger.debug("Failed to ingest external events on local worker server ..");
             		}            		
             	}
             	else {

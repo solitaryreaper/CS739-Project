@@ -297,7 +297,7 @@ $(document).ready(function () {
     {
     	// Show the hidden form that would aid user in navigating to a new server
     	$("#failure_handler").show();
-    	$("#sketch_container").css({ opacity: 0.25 });    	
+    	//$("#sketch_container").css({ opacity: 0.25 });    	
     	
     	// register session for this client with the new failover server.
     	console.log("Registering the client to paintroom with failover server ..");

@@ -46,7 +46,7 @@ public class JSONUtils {
 			}
 		}
 		
-		Logger.info("Converted " + jsonList.size() + " objects to JSON Nodes ..");
+		Logger.debug("Converted " + jsonList.size() + " objects to JSON Nodes ..");
 		return jsonList;
 	}
 	

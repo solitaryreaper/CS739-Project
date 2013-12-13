@@ -103,7 +103,7 @@ $(document).ready(function () {
              */
             if(is_normal_client_disconnect == false) {
             	console.log("Unregistering the client with paintroom ..");
-        		unregisterClientSession();
+        		//unregisterClientSession();
 
         		var is_disconnected_mode = checkIfDisconnectedMode();
             	console.log("Is disconnected ? " + is_disconnected_mode);
@@ -301,7 +301,7 @@ $(document).ready(function () {
     	
     	// register session for this client with the new failover server.
     	console.log("Registering the client to paintroom with failover server ..");
-		registerClientSessionInFailoverMode();
+		//registerClientSessionInFailoverMode();
     }
     
     /**
@@ -439,7 +439,7 @@ $(document).ready(function () {
     	    clearInterval(new_sock_checker);
     	    
     	    // setup a session for this client with the session manager
-    	    registerClientSessionInFailoverMode();
+    	    //registerClientSessionInFailoverMode();
     	}    	
     }
     

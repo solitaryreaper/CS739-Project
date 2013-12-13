@@ -407,7 +407,7 @@ $(document).ready(function () {
         	// if the disconnected server is up.
         	if(new_sock_checker < 0) {
         		console.log("Starting a new interval clock ..");
-            	new_sock_checker = setInterval(function(){renew_server_socket()}, 500);
+            	new_sock_checker = setInterval(function(){renew_server_socket()}, 1000);
         	}
 
         	/*

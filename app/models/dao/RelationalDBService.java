@@ -124,7 +124,7 @@ public class RelationalDBService implements DBService{
 		
 		String sql = " SELECT id, paint_room, painter, start_x, start_y, end_x, end_y " +
 				"FROM collabdraw.paint_room_events WHERE paint_room = ? " +
-				"ORDER BY id desc";
+				"ORDER BY id DESC";
 		
 		Map<String, Painter> painters = Maps.newHashMap();
 		Connection dbConn = getDBConnection();

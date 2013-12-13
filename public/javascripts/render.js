@@ -74,11 +74,11 @@ $(document).ready(function () {
             is_connected = true;
             // Bootstrap the canvas with prior events from the server ..
             if (is_connected) {
+                console.log("Bootstrapping session storage events after offline mode ..");
+                load_localstorage_events();  
+                
                 console.log("Bootstrapping prior events for the current session on local client ..");                	
                 dummy_initial_bootstrap();                	
-
-            	console.log("Bootstrapping session storage events after offline mode ..");
-                load_localstorage_events();                	
             } else {
                 console.log("Not connected via websocket yet during bootstrapping ..");
             }
@@ -259,6 +259,7 @@ $(document).ready(function () {
     {
     	// Show the hidden symbol to suggest that the user is operating in disconnected/offline mode.
     	$("#disconnected_handler").show();
+    	$("#connected_handler").hide();
     }
     
     // Send local client messages/events to the server via websocket duplex connection
@@ -360,6 +361,7 @@ $(document).ready(function () {
             		new_primary_sock_conn_initiated = true;
             	    
             	    $("#disconnected_handler").hide();
+            	    $("#connected_handler").show();
         		}
         	}
         	*/
@@ -378,6 +380,7 @@ $(document).ready(function () {
     		init_primary_websocket();
     	    
     	    $("#disconnected_handler").hide();
+    	    $("#connected_handler").show();
     	    
     	    // clear this polling function since the server is up now
     	    console.log("Clearing the interval function ..");

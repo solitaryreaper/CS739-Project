@@ -103,7 +103,7 @@ $(document).ready(function () {
              */
             if(is_normal_client_disconnect == false) {
             	console.log("Unregistering the client with paintroom ..");
-        		//unregisterClientSession();
+        		unregisterClientSession();
 
         		var is_disconnected_mode = checkIfDisconnectedMode();
             	console.log("Is disconnected ? " + is_disconnected_mode);
@@ -178,19 +178,25 @@ $(document).ready(function () {
     {
     	var is_server_up = false;
     	console.log("Invoking a synchronous AJAX call to check for server's status ..");
-        $.ajax({
-            type: "GET",
-            url: SESSION_MGR_API_URL,
-            data: "operation=getServerStatus&serverIP=" + server_ip_address,            
-    	    async:false,            
-            success: function(response) {
-            	console.log("API Result : " + response);
-            	api_result = response;
-            },
-            error: function( req, status, err ) {
-                console.log( 'something went wrong', status, err );
-            }             
-        });
+    	try {
+            $.ajax({
+                type: "GET",
+                url: SESSION_MGR_API_URL,
+                data: "operation=getServerStatus&serverIP=" + server_ip_address,            
+        	    async:false,            
+                success: function(response) {
+                	console.log("API Result : " + response);
+                	api_result = response;
+                },
+                error: function( req, status, err ) {
+                    console.log( 'something went wrong', status, err );
+                }             
+            });    		
+    	}
+    	catch(e) {
+    		console.log("Failed to determine if server is up. Reason : " + e.message);
+    	}
+
         
         console.log("API Result for normal client disconnect mode determination is " + api_result);
         api_result = $.trim(api_result);
@@ -224,17 +230,23 @@ $(document).ready(function () {
     	var is_disconnected_mode = false;
     	var api_result = "";
     	
-    	console.log("Invoking a synchronous AJAX call to check for disconnected mode ..");
-        $.ajax({
-            type: "GET",
-            url: SESSION_MGR_API_URL,
-            data: "operation=getWorkerServer&sessionId=" + paint_room_name + "&userId=" + user_id,
-            success: function(response) {
-            	console.log("API Result : " + response);
-            	api_result = response;
-            },
-    	    async:false
-        });
+    	try {
+        	console.log("Invoking a synchronous AJAX call to check for disconnected mode ..");
+            $.ajax({
+                type: "GET",
+                url: SESSION_MGR_API_URL,
+                data: "operation=getWorkerServer&sessionId=" + paint_room_name + "&userId=" + user_id,
+                success: function(response) {
+                	console.log("API Result : " + response);
+                	api_result = response;
+                },
+        	    async:false
+            });    		
+    	}
+    	catch(e) {
+    		console.log("Failed to determine if client is in disconnected state. Reason : " + e.message);
+    	}
+
         
         console.log("API Result for disconnected mode determination is " + api_result + "..");
         api_result = $.trim(api_result);
@@ -297,11 +309,11 @@ $(document).ready(function () {
     {
     	// Show the hidden form that would aid user in navigating to a new server
     	$("#failure_handler").show();
-    	//$("#sketch_container").css({ opacity: 0.25 });    	
+    	$("#sketch_container").css({ opacity: 0.25 });    	
     	
     	// register session for this client with the new failover server.
     	console.log("Registering the client to paintroom with failover server ..");
-		//registerClientSessionInFailoverMode();
+		registerClientSessionInFailoverMode();
     }
     
     /**
@@ -439,7 +451,7 @@ $(document).ready(function () {
     	    clearInterval(new_sock_checker);
     	    
     	    // setup a session for this client with the session manager
-    	    //registerClientSessionInFailoverMode();
+    	    registerClientSessionInFailoverMode();
     	}    	
     }
     

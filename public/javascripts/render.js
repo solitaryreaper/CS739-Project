@@ -56,6 +56,9 @@ $(document).ready(function () {
     var is_connected = false;
     var is_replicate_connected = false;
     
+    /**
+     * Opens the primary websocket connection andn initializes all the event handlers.
+     */
     function init_primary_websocket()
     {
         try {
@@ -99,7 +102,10 @@ $(document).ready(function () {
              * worker server, else operate in the disconnected mode.
              */
             if(is_normal_client_disconnect == false) {
-            	var is_disconnected_mode = checkIfDisconnectedMode();
+            	console.log("Unregistering the client with paintroom ..");
+        		unregisterClientSession();
+
+        		var is_disconnected_mode = checkIfDisconnectedMode();
             	console.log("Is disconnected ? " + is_disconnected_mode);
             	// Preferred server is down. Migrate the client to a new worker server
             	if(is_disconnected_mode == false) {
@@ -244,12 +250,58 @@ $(document).ready(function () {
     }
     
     /**
+     * Establishes a session for this paintroom and client with the session manager.
+     * 
+     * This is required when the client is either operating in the failover or the disconnected
+     * mode.
+     */
+    function registerClientSessionInFailoverMode()
+    {
+    	console.log("Invoking a synchronous AJAX call for client registration ..");
+        $.ajax({
+            type: "GET",
+            url: SESSION_MGR_API_URL,
+            data: "operation=getWorkerServer&sessionId=" + paint_room_name + "&userId=" + user_id,
+            success: function(response) {
+            	console.log("API Result : " + response);
+            	api_result = response;
+            },
+    	    async:false
+        });
+        console.log("API Result for client registration is " + api_result + "..");
+    }
+    
+    /**
+     * Unregsiters a client from a session with the session manager.
+     */
+    function unregisterClientSession()
+    {
+    	console.log("Invoking a synchronous AJAX call to unregister a client ..");
+        $.ajax({
+            type: "GET",
+            url: SESSION_MGR_API_URL,
+            data: "operation=unregisterUser&sessionId=" + paint_room_name + "&userId=" + user_id,
+            success: function(response) {
+            	console.log("API Result : " + response);
+            	api_result = response;
+            },
+    	    async:false
+        });
+        console.log("API Result for client unregistration is " + api_result + "..");
+    }
+    
+    /**
      * Function that is invoked when the preferred server goes down
      */
     function handlePreferredServerDown()
     {
     	// Show the hidden form that would aid user in navigating to a new server
     	$("#failure_handler").show();
+    	$("#sketch_container").css({ opacity: 0.25 });    	
+    	
+    	// register session for this client with the new failover server.
+    	console.log("Registering the client to paintroom with failover server ..");
+		registerClientSessionInFailoverMode();
     }
     
     /**
@@ -343,7 +395,7 @@ $(document).ready(function () {
         	// if the disconnected server is up.
         	if(new_sock_checker < 0) {
         		console.log("Starting a new interval clock ..");
-            	new_sock_checker = setInterval(function(){renew_server_socket()}, 1000);
+            	new_sock_checker = setInterval(function(){renew_server_socket()}, 100);
         	}
 
         	/*
@@ -385,6 +437,9 @@ $(document).ready(function () {
     	    // clear this polling function since the server is up now
     	    console.log("Clearing the interval function ..");
     	    clearInterval(new_sock_checker);
+    	    
+    	    // setup a session for this client with the session manager
+    	    registerClientSessionInFailoverMode();
     	}    	
     }
     

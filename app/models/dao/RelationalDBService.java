@@ -120,6 +120,8 @@ public class RelationalDBService implements DBService{
 
 	@Override
 	public List<PaintBrushEvent> getAllBrushEventsForPaintRoom(String paintRoom) {
+		long startTime = System.currentTimeMillis();
+		
 		List<PaintBrushEvent> brushEvents = Lists.newArrayList();
 		
 		String sql = " SELECT id, paint_room, painter, start_x, start_y, end_x, end_y " +
@@ -161,7 +163,10 @@ public class RelationalDBService implements DBService{
 		finally {
 			cleanDBResources(dbConn, prepStmt);
 		}
-		Logger.info("Returned " + brushEvents.size() + " total brush events for paint room " + paintRoom + " .. ");				
+		
+		long endTime = System.currentTimeMillis();
+		Logger.info("Returned " + brushEvents.size() + " total brush events for paint room " + 
+				paintRoom + " in " + (endTime - startTime) + " ms ");				
 		
 		return brushEvents;
 	}

@@ -59,7 +59,7 @@ $(document).ready(function () {
     /**
      * Opens the primary websocket connection andn initializes all the event handlers.
      */
-    function init_primary_websocket()
+    function init_primary_websocket(is_from_disconnected_state)
     {
         try {
         	primary_sock = new WebSocket("ws://" + location.host + "/stream?paintroom=" + paint_room_name);
@@ -77,9 +77,11 @@ $(document).ready(function () {
             is_connected = true;
             // Bootstrap the canvas with prior events from the server ..
             if (is_connected) {
-                console.log("Bootstrapping session storage events after offline mode ..");
-                load_localstorage_events();  
-                
+            	if(is_from_disconnected_state = true) {
+                    console.log("Bootstrapping session storage events after offline mode ..");
+                    load_localstorage_events();  
+            	}
+
                 console.log("Bootstrapping prior events for the current session on local client ..");                	
                 dummy_initial_bootstrap();                	
             } else {
@@ -168,7 +170,7 @@ $(document).ready(function () {
         }    	
     }
     
-    init_primary_websocket();
+    init_primary_websocket(false);
     init_replicate_websocket();
 
     /**
@@ -440,15 +442,15 @@ $(document).ready(function () {
     	// check if the server was in disconnected state and is now connected
     	var is_server_up = checkIfServerIsUp(preferred_ip_address);
     	if(is_server_up == true) {
-    		console.log("Restoring primary websocket connection after disconnect mode ..");
-    		init_primary_websocket();
-    	    
-    	    $("#disconnected_handler").hide();
-    	    $("#connected_handler").show();
-    	    
     	    // clear this polling function since the server is up now
     	    console.log("Clearing the interval function ..");
     	    clearInterval(new_sock_checker);
+
+    		console.log("Restoring primary websocket connection after disconnect mode ..");
+    		init_primary_websocket(true);
+    	    
+    	    $("#disconnected_handler").hide();
+    	    $("#connected_handler").show();
     	    
     	    // setup a session for this client with the session manager
     	    registerClientSessionInFailoverMode();

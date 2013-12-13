@@ -259,6 +259,7 @@ $(document).ready(function () {
     {
     	// Show the hidden symbol to suggest that the user is operating in disconnected/offline mode.
     	$("#disconnected_handler").show();
+    	$("#connected_handler").hide();
     }
     
     // Send local client messages/events to the server via websocket duplex connection
@@ -360,6 +361,7 @@ $(document).ready(function () {
             		new_primary_sock_conn_initiated = true;
             	    
             	    $("#disconnected_handler").hide();
+            	    $("#connected_handler").show();
         		}
         	}
         	*/
@@ -378,6 +380,7 @@ $(document).ready(function () {
     		init_primary_websocket();
     	    
     	    $("#disconnected_handler").hide();
+    	    $("#connected_handler").show();
     	    
     	    // clear this polling function since the server is up now
     	    console.log("Clearing the interval function ..");

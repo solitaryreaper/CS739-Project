@@ -1,14 +1,30 @@
 @(paintroom : String, painter : String, primaryIP : String, replicateIP:String, failoverIPCanvasUrl : String)
  
-@main(title = "Welcome to Paint Room ..") {
+@main(title = "Welcome to Paint Room") {
 
-	<h3> Welcome @painter!</h3>
+	<div class="row">
+		<div class="span5">
+			<h3> Welcome @painter!</h3>
+		</div>
+		<!-- In case the client is operating in disconnected mode, show this marker to indicate to
+			the client
+		-->
+		<div id="disconnected_handler" align="center" class="span6">
+			<h4 class="text-danger"><font color="red">[DISCONNECTED MODE]</font></h4>	
+		</div>
+		
+		<div id="connected_handler" align="center" class="span6">
+			<h4 class="text-success"><font color="green">[CONNECTED MODE]</font></h4>	
+		</div>
+	</div>
+	
 	<legend>
-		<button id="status" name="status" class="btn btn-success"><i class="icon-thumbs-up"></i></button> 
-		&nbsp; &nbsp;
-		<b>Drawing Board</b> : @paintroom , 
-		<b>Server IP Address</b> : @primaryIP
+		<ul>
+			<li><p><h4>Drawing Board : <font class="text-info">@paintroom</font></h4></p></li>
+		   	<li><p><h4>Server IP Address : <font class="text-info">@primaryIP</font></h4></p></li>
+	   	</ul>
 	</legend> 
+	
 	<label id="paint_room_name" name="paint_room_name" value="@paintroom">@paintroom</label>
 	<label id="painter_name" name="painter_name" value="@painter">@painter</label>
 	<label id="preferred_ip_address" name="preferred_ip_address" value="@primaryIP">@primaryIP</label>
@@ -31,13 +47,6 @@
 		</button>
 	</div>
 	
-	<!-- In case the client is operating in disconnected mode, show this marker to indicate to
-		the client
-	-->
-	<div id="disconnected_handler" align="center">
-		<h4 class="text-danger"><font color="red">Disconnected mode .. !!</font></h4>	
-	</div>
-	
 	<script type="text/javascript" src = "@routes.Assets.at("javascripts/render.js")"></script>
 	
 	<script type="text/javascript">           
@@ -49,6 +58,7 @@
 		
 		$("#failure_handler").hide();
 		$("#disconnected_handler").hide();
+		$("#connected_handler").show();
 	});
 	</script>		
 }
